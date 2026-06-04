@@ -1,5 +1,6 @@
 # MQNet
 
+[![Tests](https://github.com/panuoksala/mqnet/actions/workflows/tests.yml/badge.svg)](https://github.com/panuoksala/mqnet/actions/workflows/tests.yml)
 [![CI](https://github.com/panuoksala/mqnet/actions/workflows/ci.yml/badge.svg)](https://github.com/panuoksala/mqnet/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/MQNet.svg)](https://www.nuget.org/packages/MQNet)
 

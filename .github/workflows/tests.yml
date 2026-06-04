@@ -1,0 +1,48 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  MQ_TAG: v0.5.31
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Clone mq at pinned tag
+        run: git clone --depth=1 --branch ${{ env.MQ_TAG }} https://github.com/harehare/mq.git .mq
+
+      - name: Build mq-ffi (win-x64)
+        run: cargo build --release -p mq-ffi --target x86_64-pc-windows-msvc
+        working-directory: .mq
+
+      - name: Place native DLL for tests
+        run: |
+          New-Item -ItemType Directory -Force src\MQNet\native\win-x64 | Out-Null
+          Copy-Item .mq\target\x86_64-pc-windows-msvc\release\mq_ffi.dll src\MQNet\native\win-x64\mq_ffi.dll
+
+      - name: Restore
+        run: dotnet restore tests\MQNet.Tests\MQNet.Tests.csproj
+
+      - name: Test
+        run: dotnet test tests\MQNet.Tests\MQNet.Tests.csproj -c Release -v normal
