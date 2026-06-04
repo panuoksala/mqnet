@@ -105,15 +105,21 @@ public sealed class MqEngine : IDisposable
 
     private static MqResult MarshalResult(MqResultNative native)
     {
-        var count = (int)native.ValuesLen;
+        var rawLen = (ulong)native.ValuesLen;
+        if (rawLen > (ulong)Array.MaxLength)
+            throw new InvalidOperationException($"Native result length {rawLen} exceeds maximum.");
+        var count = (int)rawLen;
+
         if (count == 0 || native.Values == IntPtr.Zero)
             return new MqResult([]);
 
-        var values = new string[count];
+        var values = new List<string>(count);
         for (int i = 0; i < count; i++)
         {
             var ptrToStr = Marshal.ReadIntPtr(native.Values, i * IntPtr.Size);
-            values[i] = Marshal.PtrToStringUTF8(ptrToStr) ?? "";
+            var s = Marshal.PtrToStringUTF8(ptrToStr) ?? "";
+            if (s.Length > 0)
+                values.Add(s);
         }
         return new MqResult(values);
     }

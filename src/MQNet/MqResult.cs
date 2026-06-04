@@ -10,6 +10,7 @@ public sealed class MqResult : IReadOnlyList<string>
     /// <summary>Creates a new MqResult with the specified values.</summary>
     public MqResult(IReadOnlyList<string> values)
     {
+        ArgumentNullException.ThrowIfNull(values);
         _values = values;
     }
 
