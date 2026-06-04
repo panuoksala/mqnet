@@ -140,7 +140,7 @@ jobs:
         run: dotnet build --no-restore -c Release
 
       - name: Test
-        run: dotnet test tests/MQNet.Tests/MQNet.Tests.csproj --no-build -c Release -v normal
+        run: dotnet test tests/MQNet.Tests/MQNet.Tests.csproj --no-restore -c Release -v normal
 
   # ── Pack and publish ───────────────────────────────────────────────────────
   pack:
