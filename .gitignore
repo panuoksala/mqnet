@@ -5,6 +5,9 @@ obj/
 ## Native library sources and built binaries
 .mq/
 src/MQNet/native/
+# Allow C# source files in the Native interop directory
+!src/MQNet/native/*.cs
+!src/MQNet/native/**/*.cs
 
 ## NuGet packages
 *.nupkg
