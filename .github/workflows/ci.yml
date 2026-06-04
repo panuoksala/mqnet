@@ -71,11 +71,17 @@ jobs:
         if: matrix.cross == false
         run: cargo build --release -p mq-ffi --target ${{ matrix.cargo-target }}
         working-directory: .mq
+        env:
+          # Override rust-toolchain.toml pin so the cross-compile target installed
+          # by dtolnay/rust-toolchain@stable is available
+          RUSTUP_TOOLCHAIN: stable
 
       - name: Build mq-ffi (cross-compile)
         if: matrix.cross == true
         run: cross build --release -p mq-ffi --target ${{ matrix.cargo-target }}
         working-directory: .mq
+        env:
+          RUSTUP_TOOLCHAIN: stable
 
       - name: Upload native binary
         uses: actions/upload-artifact@v4
