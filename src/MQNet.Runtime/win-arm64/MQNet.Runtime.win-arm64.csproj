@@ -1,8 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageId>MQNet.Runtime.win-arm64</PackageId>
-    <Description>Windows ARM64 runtime for MQNet</Description>
-    <RuntimeIdentifier>win-arm64</RuntimeIdentifier>
+    <Description>Native runtime assets for MQNet on Windows arm64.</Description>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="runtimes\win-arm64\native\mq_ffi.dll"
+          Pack="true"
+          PackagePath="runtimes\win-arm64\native\"
+          Condition="Exists('runtimes\win-arm64\native\mq_ffi.dll')" />
+  </ItemGroup>
 </Project>

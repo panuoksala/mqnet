@@ -1,8 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageId>MQNet.Runtime.linux-arm64</PackageId>
-    <Description>Linux ARM64 runtime for MQNet</Description>
-    <RuntimeIdentifier>linux-arm64</RuntimeIdentifier>
+    <Description>Native runtime assets for MQNet on Linux arm64.</Description>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="runtimes/linux-arm64/native/libmq_ffi.so"
+          Pack="true"
+          PackagePath="runtimes/linux-arm64/native/"
+          Condition="Exists('runtimes/linux-arm64/native/libmq_ffi.so')" />
+  </ItemGroup>
 </Project>

@@ -1,8 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageId>MQNet.Runtime.osx-arm64</PackageId>
-    <Description>macOS ARM64 runtime for MQNet</Description>
-    <RuntimeIdentifier>osx-arm64</RuntimeIdentifier>
+    <Description>Native runtime assets for MQNet on macOS arm64.</Description>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="runtimes/osx-arm64/native/libmq_ffi.dylib"
+          Pack="true"
+          PackagePath="runtimes/osx-arm64/native/"
+          Condition="Exists('runtimes/osx-arm64/native/libmq_ffi.dylib')" />
+  </ItemGroup>
 </Project>
