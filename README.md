@@ -6,6 +6,17 @@
 
 A .NET wrapper for [mq](https://github.com/harehare/mq) — a jq-like query tool for Markdown. Query headings, code blocks, paragraphs, and more using a simple, composable query language.
 
+## How it works
+
+MQNet is a thin managed wrapper around the native `mq-ffi` library, which is compiled from the [mq](https://github.com/harehare/mq) Rust crate. At runtime, .NET's P/Invoke loads the platform-native binary (`mq_ffi.dll` / `libmq_ffi.so` / `libmq_ffi.dylib`) and marshals calls across the native boundary.
+
+The package ships in two layers:
+
+- **`MQNet`** — the managed API you reference in your project.
+- **`MQNet.Runtime.<rid>`** — thin packages containing only the native binary for a specific platform (e.g. `MQNet.Runtime.linux-x64`). NuGet's [runtime identifier graph](https://learn.microsoft.com/en-us/dotnet/core/rid-catalog) selects the right one automatically at restore time.
+
+You only need to install `MQNet`; the correct native binary is pulled in automatically.
+
 ## Installation
 
 ```shell

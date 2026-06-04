@@ -4,7 +4,8 @@
     <id>MQNet</id>
     <version>$version$</version>
     <authors>$authors$</authors>
-    <description>A .NET wrapper for mq — a jq-like tool for querying and transforming Markdown.</description>
+    <title>MQNet — .NET wrapper for mq Markdown query library</title>
+    <description>A .NET wrapper for mq — a jq-like tool for querying and transforming Markdown. Extract headings, code blocks, paragraphs, and links using a fluent API (Mq.Query(".h(1)").On(markdown).Run()) or a reusable MqEngine. Supports Markdown, HTML, and plain-text inputs. Cross-platform: Windows, Linux, and macOS (x64 and ARM64).</description>
     <projectUrl>https://github.com/panuoksala/mqnet</projectUrl>
     <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <MqVersion>0.5.31</MqVersion>
     <Version>$(MqVersion)</Version>
-    <Authors>MQNet Contributors</Authors>
+    <Authors>Panu Oksala</Authors>
     <PackageProjectUrl>https://github.com/panuoksala/mqnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/panuoksala/mqnet</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
