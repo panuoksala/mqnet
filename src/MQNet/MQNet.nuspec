@@ -5,7 +5,7 @@
     <version>$version$</version>
     <authors>$authors$</authors>
     <description>A .NET wrapper for mq — a jq-like tool for querying and transforming Markdown.</description>
-    <projectUrl>https://github.com/OWNER/MQNet</projectUrl>
+    <projectUrl>https://github.com/panuoksala/mqnet</projectUrl>
     <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>markdown mq query transform jq</tags>
