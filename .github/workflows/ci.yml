@@ -30,7 +30,7 @@ jobs:
             rid: win-arm64
             cargo-target: aarch64-pc-windows-msvc
             lib: mq_ffi.dll
-            cross: true
+            cross: false
           - os: ubuntu-latest
             rid: linux-x64
             cargo-target: x86_64-unknown-linux-gnu
