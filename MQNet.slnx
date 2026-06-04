@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="src\MQNet\MQNet.csproj" />
+  <Project Path="src\MQNet.Runtime\win-x64\MQNet.Runtime.win-x64.csproj" />
+  <Project Path="src\MQNet.Runtime\win-arm64\MQNet.Runtime.win-arm64.csproj" />
+  <Project Path="src\MQNet.Runtime\linux-x64\MQNet.Runtime.linux-x64.csproj" />
+  <Project Path="src\MQNet.Runtime\linux-arm64\MQNet.Runtime.linux-arm64.csproj" />
+  <Project Path="src\MQNet.Runtime\osx-x64\MQNet.Runtime.osx-x64.csproj" />
+  <Project Path="src\MQNet.Runtime\osx-arm64\MQNet.Runtime.osx-arm64.csproj" />
+  <Project Path="tests\MQNet.Tests\MQNet.Tests.csproj" />
+</Solution>

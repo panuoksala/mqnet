@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <MqVersion>0.5.31</MqVersion>
+    <Version>$(MqVersion)</Version>
+    <Authors>MQNet Contributors</Authors>
+    <PackageProjectUrl>https://github.com/OWNER/MQNet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/OWNER/MQNet</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>

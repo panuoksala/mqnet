@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <PackageId>MQNet</PackageId>
+    <Description>A .NET wrapper for mq — a jq-like tool for querying and transforming Markdown.</Description>
+    <NuspecFile>MQNet.nuspec</NuspecFile>
+    <NuspecProperties>version=$(Version);authors=$(Authors)</NuspecProperties>
+  </PropertyGroup>
+
+  <!-- Local development: copy native binary from build-native.ps1 output to test output dir -->
+  <ItemGroup>
+    <Content Include="native\mq_ffi.dll" Condition="Exists('native\mq_ffi.dll')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>mq_ffi.dll</TargetPath>
+    </Content>
+    <Content Include="native\libmq_ffi.so" Condition="Exists('native\libmq_ffi.so')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libmq_ffi.so</TargetPath>
+    </Content>
+    <Content Include="native\libmq_ffi.dylib" Condition="Exists('native\libmq_ffi.dylib')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>libmq_ffi.dylib</TargetPath>
+    </Content>
+  </ItemGroup>
+</Project>

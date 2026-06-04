@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>MQNet</id>
+    <version>$version$</version>
+    <authors>$authors$</authors>
+    <description>A .NET wrapper for mq — a jq-like tool for querying and transforming Markdown.</description>
+    <projectUrl>https://github.com/OWNER/MQNet</projectUrl>
+    <license type="expression">MIT</license>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>markdown mq query transform jq</tags>
+    <dependencies>
+      <group targetFramework="net8.0">
+        <dependency id="MQNet.Runtime.win-x64"    version="[$version$,)" />
+        <dependency id="MQNet.Runtime.win-arm64"   version="[$version$,)" />
+        <dependency id="MQNet.Runtime.linux-x64"   version="[$version$,)" />
+        <dependency id="MQNet.Runtime.linux-arm64" version="[$version$,)" />
+        <dependency id="MQNet.Runtime.osx-x64"     version="[$version$,)" />
+        <dependency id="MQNet.Runtime.osx-arm64"   version="[$version$,)" />
+      </group>
+      <group targetFramework="net10.0">
+        <dependency id="MQNet.Runtime.win-x64"    version="[$version$,)" />
+        <dependency id="MQNet.Runtime.win-arm64"   version="[$version$,)" />
+        <dependency id="MQNet.Runtime.linux-x64"   version="[$version$,)" />
+        <dependency id="MQNet.Runtime.linux-arm64" version="[$version$,)" />
+        <dependency id="MQNet.Runtime.osx-x64"     version="[$version$,)" />
+        <dependency id="MQNet.Runtime.osx-arm64"   version="[$version$,)" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\net8.0\MQNet.dll"     target="lib\net8.0\MQNet.dll" />
+    <file src="bin\Release\net10.0\MQNet.dll"    target="lib\net10.0\MQNet.dll" />
+    <file src="bin\Release\net8.0\MQNet.xml"     target="lib\net8.0\MQNet.xml" />
+    <file src="bin\Release\net10.0\MQNet.xml"    target="lib\net10.0\MQNet.xml" />
+  </files>
+</package>

@@ -1,0 +1,15 @@
+## Build output
+bin/
+obj/
+
+## Native library sources and built binaries
+.mq/
+src/MQNet/native/
+
+## NuGet packages
+*.nupkg
+*.snupkg
+
+## User-specific files
+.vs/
+*.user
