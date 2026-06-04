@@ -1,0 +1,195 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  pull_request:
+    branches: [main]
+
+env:
+  MQ_TAG: v0.5.31
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_NOLOGO: true
+
+jobs:
+  # ── Build native mq-ffi for each platform ────────────────────────────────
+  native:
+    name: Native (${{ matrix.rid }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            cargo-target: x86_64-pc-windows-msvc
+            lib: mq_ffi.dll
+            cross: false
+          - os: windows-latest
+            rid: win-arm64
+            cargo-target: aarch64-pc-windows-msvc
+            lib: mq_ffi.dll
+            cross: true
+          - os: ubuntu-latest
+            rid: linux-x64
+            cargo-target: x86_64-unknown-linux-gnu
+            lib: libmq_ffi.so
+            cross: false
+          - os: ubuntu-latest
+            rid: linux-arm64
+            cargo-target: aarch64-unknown-linux-gnu
+            lib: libmq_ffi.so
+            cross: true
+          - os: macos-latest
+            rid: osx-x64
+            cargo-target: x86_64-apple-darwin
+            lib: libmq_ffi.dylib
+            cross: false
+          - os: macos-latest
+            rid: osx-arm64
+            cargo-target: aarch64-apple-darwin
+            lib: libmq_ffi.dylib
+            cross: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.cargo-target }}
+
+      - name: Install cross (Linux arm64 only)
+        if: matrix.cross == true && matrix.os == 'ubuntu-latest'
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Clone mq at pinned tag
+        run: git clone --depth=1 --branch ${{ env.MQ_TAG }} https://github.com/harehare/mq.git .mq
+
+      - name: Build mq-ffi (native)
+        if: matrix.cross == false
+        run: cargo build --release -p mq-ffi --target ${{ matrix.cargo-target }}
+        working-directory: .mq
+
+      - name: Build mq-ffi (cross-compile)
+        if: matrix.cross == true
+        run: cross build --release -p mq-ffi --target ${{ matrix.cargo-target }}
+        working-directory: .mq
+
+      - name: Upload native binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-${{ matrix.rid }}
+          path: .mq/target/${{ matrix.cargo-target }}/release/${{ matrix.lib }}
+
+  # ── Build managed code, run tests, pack ───────────────────────────────────
+  build:
+    name: Build & Test (${{ matrix.os }})
+    needs: native
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Download all native binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: native-artifacts
+
+      - name: Place native binaries for local dev testing
+        shell: pwsh
+        run: |
+          $rids = @('win-x64','win-arm64','linux-x64','linux-arm64','osx-x64','osx-arm64')
+          $libNames = @{
+            'win-x64'='mq_ffi.dll'; 'win-arm64'='mq_ffi.dll';
+            'linux-x64'='libmq_ffi.so'; 'linux-arm64'='libmq_ffi.so';
+            'osx-x64'='libmq_ffi.dylib'; 'osx-arm64'='libmq_ffi.dylib'
+          }
+          foreach ($rid in $rids) {
+            $lib = $libNames[$rid]
+            $src = "native-artifacts/native-$rid/$lib"
+            # Place in MQNet/native/ for test runs
+            $nativeDest = "src/MQNet/native/$rid"
+            New-Item -ItemType Directory -Force -Path $nativeDest | Out-Null
+            if (Test-Path $src) { Copy-Item $src "$nativeDest/$lib" -Force }
+            # Place in runtime package runtimes/ for packing
+            $rtDest = "src/MQNet.Runtime/$rid/runtimes/$rid/native"
+            New-Item -ItemType Directory -Force -Path $rtDest | Out-Null
+            if (Test-Path $src) { Copy-Item $src "$rtDest/$lib" -Force }
+          }
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release
+
+      - name: Test
+        run: dotnet test tests/MQNet.Tests/MQNet.Tests.csproj --no-build -c Release -v normal
+
+  # ── Pack and publish ───────────────────────────────────────────────────────
+  pack:
+    name: Pack & Publish
+    needs: build
+    runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Download all native binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: native-artifacts
+
+      - name: Place native binaries in runtime packages
+        shell: pwsh
+        run: |
+          $rids = @('win-x64','win-arm64','linux-x64','linux-arm64','osx-x64','osx-arm64')
+          $libNames = @{
+            'win-x64'='mq_ffi.dll'; 'win-arm64'='mq_ffi.dll';
+            'linux-x64'='libmq_ffi.so'; 'linux-arm64'='libmq_ffi.so';
+            'osx-x64'='libmq_ffi.dylib'; 'osx-arm64'='libmq_ffi.dylib'
+          }
+          foreach ($rid in $rids) {
+            $lib = $libNames[$rid]
+            $src = "native-artifacts/native-$rid/$lib"
+            $dest = "src/MQNet.Runtime/$rid/runtimes/$rid/native"
+            New-Item -ItemType Directory -Force -Path $dest | Out-Null
+            Copy-Item $src "$dest/$lib" -Force
+          }
+
+      - name: Pack runtime packages
+        run: |
+          dotnet pack src/MQNet.Runtime/win-x64/MQNet.Runtime.win-x64.csproj     -c Release -o artifacts
+          dotnet pack src/MQNet.Runtime/win-arm64/MQNet.Runtime.win-arm64.csproj  -c Release -o artifacts
+          dotnet pack src/MQNet.Runtime/linux-x64/MQNet.Runtime.linux-x64.csproj  -c Release -o artifacts
+          dotnet pack src/MQNet.Runtime/linux-arm64/MQNet.Runtime.linux-arm64.csproj -c Release -o artifacts
+          dotnet pack src/MQNet.Runtime/osx-x64/MQNet.Runtime.osx-x64.csproj     -c Release -o artifacts
+          dotnet pack src/MQNet.Runtime/osx-arm64/MQNet.Runtime.osx-arm64.csproj  -c Release -o artifacts
+
+      - name: Build and pack main package
+        run: |
+          dotnet build src/MQNet/MQNet.csproj -c Release
+          dotnet pack src/MQNet/MQNet.csproj -c Release -o artifacts
+
+      - name: List packages
+        run: Get-ChildItem artifacts\*.nupkg
+
+      - name: Publish to NuGet.org
+        run: |
+          dotnet nuget push artifacts\*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
