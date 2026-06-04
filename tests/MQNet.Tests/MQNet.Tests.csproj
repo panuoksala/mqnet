@@ -22,7 +22,7 @@
   <!-- Copy native DLL for local testing -->
   <ItemGroup>
     <None Include="..\..\src\MQNet\native\win-x64\mq_ffi.dll"
-          Condition="Exists('..\..\src\MQNet\native\win-x64\mq_ffi.dll')"
+          Condition="Exists('../../src/MQNet/native/win-x64/mq_ffi.dll')"
           Link="mq_ffi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

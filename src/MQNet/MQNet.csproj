@@ -11,28 +11,28 @@
 
   <!-- Local development: copy native binary from build-native.ps1 output to test output dir -->
   <ItemGroup>
-    <Content Include="native\win-x64\mq_ffi.dll" Condition="Exists('native\win-x64\mq_ffi.dll')" Link="mq_ffi.dll">
+    <Content Include="native/win-x64/mq_ffi.dll" Condition="Exists('native/win-x64/mq_ffi.dll')" Link="mq_ffi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="native\mq_ffi.dll" Condition="Exists('native\mq_ffi.dll')" Link="mq_ffi.dll">
+    <Content Include="native/mq_ffi.dll" Condition="Exists('native/mq_ffi.dll')" Link="mq_ffi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="native\libmq_ffi.so" Condition="Exists('native\libmq_ffi.so')" Link="libmq_ffi.so">
+    <Content Include="native/linux-x64/libmq_ffi.so" Condition="Exists('native/linux-x64/libmq_ffi.so')" Link="libmq_ffi.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="native\linux-x64\libmq_ffi.so" Condition="Exists('native\linux-x64\libmq_ffi.so')" Link="libmq_ffi.so">
+    <Content Include="native/linux-arm64/libmq_ffi.so" Condition="Exists('native/linux-arm64/libmq_ffi.so')" Link="libmq_ffi.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="native\linux-arm64\libmq_ffi.so" Condition="Exists('native\linux-arm64\libmq_ffi.so')" Link="libmq_ffi.so">
+    <Content Include="native/libmq_ffi.so" Condition="Exists('native/libmq_ffi.so')" Link="libmq_ffi.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="native\libmq_ffi.dylib" Condition="Exists('native\libmq_ffi.dylib')" Link="libmq_ffi.dylib">
+    <Content Include="native/osx-x64/libmq_ffi.dylib" Condition="Exists('native/osx-x64/libmq_ffi.dylib')" Link="libmq_ffi.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="native\osx-x64\libmq_ffi.dylib" Condition="Exists('native\osx-x64\libmq_ffi.dylib')" Link="libmq_ffi.dylib">
+    <Content Include="native/osx-arm64/libmq_ffi.dylib" Condition="Exists('native/osx-arm64/libmq_ffi.dylib')" Link="libmq_ffi.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="native\osx-arm64\libmq_ffi.dylib" Condition="Exists('native\osx-arm64\libmq_ffi.dylib')" Link="libmq_ffi.dylib">
+    <Content Include="native/libmq_ffi.dylib" Condition="Exists('native/libmq_ffi.dylib')" Link="libmq_ffi.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
