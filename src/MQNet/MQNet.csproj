@@ -11,21 +11,25 @@
 
   <!-- Local development: copy native binary from build-native.ps1 output to test output dir -->
   <ItemGroup>
-    <Content Include="native\win-x64\mq_ffi.dll" Condition="Exists('native\win-x64\mq_ffi.dll')">
+    <Content Include="native\win-x64\mq_ffi.dll" Condition="Exists('native\win-x64\mq_ffi.dll')" Link="mq_ffi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>mq_ffi.dll</TargetPath>
     </Content>
-    <Content Include="native\mq_ffi.dll" Condition="Exists('native\mq_ffi.dll')">
+    <Content Include="native\mq_ffi.dll" Condition="Exists('native\mq_ffi.dll')" Link="mq_ffi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>mq_ffi.dll</TargetPath>
     </Content>
-    <Content Include="native\libmq_ffi.so" Condition="Exists('native\libmq_ffi.so')">
+    <Content Include="native\libmq_ffi.so" Condition="Exists('native\libmq_ffi.so')" Link="libmq_ffi.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libmq_ffi.so</TargetPath>
     </Content>
-    <Content Include="native\libmq_ffi.dylib" Condition="Exists('native\libmq_ffi.dylib')">
+    <Content Include="native\libmq_ffi.dylib" Condition="Exists('native\libmq_ffi.dylib')" Link="libmq_ffi.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libmq_ffi.dylib</TargetPath>
     </Content>
   </ItemGroup>
+
+  <!-- Fallback: explicit copy target for local dev builds -->
+  <Target Name="CopyNativeDll" AfterTargets="Build">
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/native/win-x64/mq_ffi.dll"
+          DestinationFiles="$(OutDir)mq_ffi.dll"
+          Condition="Exists('$(MSBuildProjectDirectory)/native/win-x64/mq_ffi.dll')"
+          SkipUnchangedFiles="true" />
+  </Target>
 </Project>
