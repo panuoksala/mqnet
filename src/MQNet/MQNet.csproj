@@ -5,6 +5,7 @@
     <Description>A .NET wrapper for mq — a jq-like tool for querying and transforming Markdown.</Description>
     <NuspecFile>MQNet.nuspec</NuspecFile>
     <NuspecProperties>version=$(Version);authors=$(Authors)</NuspecProperties>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <!-- Local development: copy native binary from build-native.ps1 output to test output dir -->
