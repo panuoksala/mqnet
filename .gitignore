@@ -13,3 +13,5 @@ src/MQNet/native/
 ## User-specific files
 .vs/
 *.user
+
+native/
