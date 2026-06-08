@@ -139,8 +139,18 @@ jobs:
       - name: Build
         run: dotnet build --no-restore -c Release
 
+      - name: Copy native library to test output (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          for tfm in net8.0 net10.0; do
+            dest="tests/MQNet.Tests/bin/Release/$tfm"
+            if [ -d "$dest" ]; then
+              cp src/MQNet/native/linux-x64/libmq_ffi.so "$dest/"
+            fi
+          done
+
       - name: Test
-        run: dotnet test tests/MQNet.Tests/MQNet.Tests.csproj --no-restore -c Release -v normal
+        run: dotnet test tests/MQNet.Tests/MQNet.Tests.csproj --no-build --no-restore -c Release -v normal
 
   # ── Pack and publish ───────────────────────────────────────────────────────
   pack:
