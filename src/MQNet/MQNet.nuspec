@@ -10,6 +10,7 @@
     <license type="expression">MIT</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>markdown mq query transform jq</tags>
+    <readme>README.md</readme>
     <dependencies>
       <group targetFramework="net8.0">
         <dependency id="MQNet.Runtime.win-x64"    version="[$version$,)" />
@@ -34,5 +35,6 @@
     <file src="bin\Release\net10.0\MQNet.dll"    target="lib\net10.0\MQNet.dll" />
     <file src="bin\Release\net8.0\MQNet.xml"     target="lib\net8.0\MQNet.xml" />
     <file src="bin\Release\net10.0\MQNet.xml"    target="lib\net10.0\MQNet.xml" />
+    <file src="..\..\README.md"                  target="README.md" />
   </files>
 </package>
