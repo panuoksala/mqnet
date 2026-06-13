@@ -115,6 +115,26 @@ foreach (var item in result)
     Console.WriteLine(item);
 ```
 
+### Plain text output (no Markdown formatting)
+
+mq has a built-in `to_text()` function that strips Markdown formatting at the AST level. Use it by piping your query through `to_text`, or use the `WithPlainText()` convenience method on the fluent API:
+
+```csharp
+// Fluent API — WithPlainText() appends "| to_text" to the query
+var result = Mq.Query(".h(1)")
+    .On("# Hello **World**\n\n## Section")
+    .WithPlainText()
+    .Run();
+
+// result[0] → "Hello World"  (no # or ** markers)
+
+// Equivalent using MqEngine directly
+using var engine = new MqEngine();
+var result = engine.Eval(".h | to_text", "# Hello\n\n## World");
+
+// result.Values → ["Hello", "World"]
+```
+
 ## Input Formats
 
 | Format | Description |
@@ -142,7 +162,7 @@ Some common queries:
 .h(2)       # H2 headings only
 .code       # all code blocks
 .code("go") # code blocks with language "go"
-.p          # paragraphs
+.text       # paragraphs / text nodes
 .link       # links
 .image      # images
 .list       # list items
@@ -151,6 +171,10 @@ Some common queries:
 .h | select(contains("API"))         # headings containing "API"
 .h | map(ascii_downcase)             # lowercase all headings
 .code | select(startswith("fn "))    # code blocks starting with "fn "
+
+# Plain text (strip Markdown formatting)
+.h | to_text                         # heading text without # markers
+.h(1) | to_text                      # H1 text only, no formatting
 ```
 
 ## License
