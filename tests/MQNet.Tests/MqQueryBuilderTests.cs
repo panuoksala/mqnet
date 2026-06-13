@@ -71,4 +71,29 @@ public class MqQueryBuilderTests
     {
         Assert.Throws<MqException>(() => Mq.Query(".!!bad!!").On("# Hello").Run());
     }
+
+    // --- WithPlainText ---
+
+    [Fact]
+    public void Query_WithPlainText_StripsHeadingMarkers()
+    {
+        var result = Mq.Query(".h(1)").On("# Hello\n\n## World").WithPlainText().Run();
+        Assert.Single(result);
+        Assert.Equal("Hello", result[0]);
+    }
+
+    [Fact]
+    public void Query_WithPlainText_StripsMarkdownFormatting()
+    {
+        var result = Mq.Query(".h").On("# Hello **World**\n\n## *Section*").WithPlainText().Run();
+        Assert.Equal(["Hello World", "Section"], result.Values);
+    }
+
+    [Fact]
+    public void Query_WithPlainText_ChainReturnsSameBuilder()
+    {
+        var builder = Mq.Query(".h(1)");
+        var withPlainText = builder.WithPlainText();
+        Assert.Same(builder, withPlainText);
+    }
 }

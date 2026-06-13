@@ -118,6 +118,34 @@ public class MqEngineTests
         Assert.Equal("Line B", result[0]);
     }
 
+    // --- to_text (plain text output) ---
+
+    [Fact]
+    public void Eval_ToText_RemovesHeadingMarkers()
+    {
+        using var engine = new MqEngine();
+        var result = engine.Eval(".h | to_text", "# Hello\n\n## World\n\n# Another");
+        Assert.Equal(["Hello", "World", "Another"], result.Values);
+    }
+
+    [Fact]
+    public void Eval_ToText_RemovesBoldFormatting()
+    {
+        using var engine = new MqEngine();
+        var result = engine.Eval(".text | to_text", "**bold text**");
+        Assert.Single(result);
+        Assert.Equal("bold text", result[0]);
+    }
+
+    [Fact]
+    public void Eval_ToText_H1Only_ReturnsPlainHeadingText()
+    {
+        using var engine = new MqEngine();
+        var result = engine.Eval(".h(1) | to_text", "# Hello **World**\n\n## Section");
+        Assert.Single(result);
+        Assert.Equal("Hello World", result[0]);
+    }
+
     // --- HTML conversion ---
 
     [Fact]

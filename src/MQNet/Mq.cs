@@ -17,6 +17,7 @@ public sealed class MqQueryBuilder
     private readonly string _query;
     private string? _input;
     private InputFormat _format = InputFormat.Markdown;
+    private bool _plainText;
 
     internal MqQueryBuilder(string query)
     {
@@ -39,6 +40,17 @@ public sealed class MqQueryBuilder
         return this;
     }
 
+    /// <summary>
+    /// Appends <c>| to_text</c> to the query so that results are returned as plain text
+    /// with all Markdown formatting removed. This delegates to the native mq <c>to_text()</c>
+    /// built-in, which operates on the parsed AST rather than the raw string.
+    /// </summary>
+    public MqQueryBuilder WithPlainText()
+    {
+        _plainText = true;
+        return this;
+    }
+
     /// <summary>Executes the query and returns the result.</summary>
     /// <exception cref="InvalidOperationException">If <see cref="On"/> was not called.</exception>
     /// <exception cref="MqException">If the query fails.</exception>
@@ -47,7 +59,8 @@ public sealed class MqQueryBuilder
         if (_input is null)
             throw new InvalidOperationException("Call On(input) before Run().");
 
+        var query = _plainText ? $"{_query} | to_text" : _query;
         using var engine = new MqEngine();
-        return engine.Eval(_query, _input, _format);
+        return engine.Eval(query, _input, _format);
     }
 }
