@@ -132,7 +132,7 @@ public class MqEngineTests
     public void Eval_ToText_RemovesBoldFormatting()
     {
         using var engine = new MqEngine();
-        var result = engine.Eval(".p | to_text", "**bold text**");
+        var result = engine.Eval(".text | to_text", "**bold text**");
         Assert.Single(result);
         Assert.Equal("bold text", result[0]);
     }
