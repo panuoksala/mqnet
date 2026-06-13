@@ -60,4 +60,41 @@ public class MqResultTests
         var result = new MqResult(["a"]);
         Assert.Throws<ArgumentOutOfRangeException>(() => _ = result[5]);
     }
+
+    // --- PlainValues / PlainText ---
+
+    [Fact]
+    public void PlainValues_StripsMarkdownFromEachValue()
+    {
+        var result = new MqResult(["# H1", "## H2"]);
+        Assert.Equal(["H1", "H2"], result.PlainValues);
+    }
+
+    [Fact]
+    public void PlainText_JoinsPlainValuesWithNewline()
+    {
+        var result = new MqResult(["# H1", "## H2"]);
+        Assert.Equal("H1\nH2", result.PlainText);
+    }
+
+    [Fact]
+    public void PlainValues_EmptyResult_ReturnsEmpty()
+    {
+        var result = new MqResult([]);
+        Assert.Empty(result.PlainValues);
+    }
+
+    [Fact]
+    public void PlainText_EmptyResult_ReturnsEmptyString()
+    {
+        var result = new MqResult([]);
+        Assert.Equal("", result.PlainText);
+    }
+
+    [Fact]
+    public void PlainValues_BoldAndItalic_AreStripped()
+    {
+        var result = new MqResult(["**bold** and *italic*"]);
+        Assert.Equal(["bold and italic"], result.PlainValues);
+    }
 }

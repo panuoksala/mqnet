@@ -20,6 +20,14 @@ public sealed class MqResult : IReadOnlyList<string>
     /// <summary>All values joined by a newline character.</summary>
     public string Text => _values.Count == 0 ? "" : string.Join('\n', _values);
 
+    /// <summary>All matched values with markdown formatting removed.</summary>
+    public IReadOnlyList<string> PlainValues => _values.Count == 0
+        ? []
+        : _values.Select(MarkdownStripper.Strip).ToList();
+
+    /// <summary>All plain-text values (markdown removed) joined by a newline character.</summary>
+    public string PlainText => _values.Count == 0 ? "" : string.Join('\n', PlainValues);
+
     /// <inheritdoc />
     public string this[int index]
     {
