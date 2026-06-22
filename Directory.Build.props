@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <MqVersion>0.5.34</MqVersion>
+    <MqVersion>0.5.35</MqVersion>
     <Version>$(MqVersion)</Version>
     <Authors>Panu Oksala</Authors>
     <PackageProjectUrl>https://github.com/panuoksala/mqnet</PackageProjectUrl>
