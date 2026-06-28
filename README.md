@@ -88,6 +88,7 @@ Mq.Query(".code(\"rust\")").On(markdown).Run();
 // After — typed selectors
 Mq.Query(MarkdownTag.H1).On(markdown).Run();
 Mq.Query(MarkdownTag.H2).On(markdown).Run();
+Mq.Query(MarkdownTag.AllHeadings).On(markdown).Run(); // all headings, any level
 Mq.Query(MarkdownTag.Code).On(markdown).Run();       // all code blocks
 Mq.Query(MarkdownTag.Link).On(markdown).Run();
 Mq.Query(MarkdownTag.List).On(markdown).Run();

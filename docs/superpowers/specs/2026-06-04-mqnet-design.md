@@ -133,6 +133,7 @@ Mq.Query(MarkdownTag.HeadingLevel(3)).On(markdown).Run();          // .h(3)
 Mq.Query(MarkdownTag.HeadingRange(1, 3)).On(markdown).Run();       // .h(1..3) — inclusive
 Mq.Query(MarkdownTag.Heading(1..3)).On(markdown).Run();            // .h(1..2) — C# Range, exclusive end
 Mq.Query(MarkdownTag.Heading(1..)).On(markdown).Run();             // .h(1..6) — open end reaches H6
+Mq.Query(MarkdownTag.Heading(^3..)).On(markdown).Run();            // .h(3..6) — from-end index, H3–H6
 Mq.Query(MarkdownTag.CodeBlock("rust")).On(markdown).Run();        // .code("rust")
 
 // Convenience entry points
