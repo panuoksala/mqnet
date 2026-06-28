@@ -76,6 +76,73 @@ var matches = Mq.Query("select(contains(\"error\"))")
     .Run();
 ```
 
+### Typed Markdown Tags
+
+Instead of writing raw mq selector strings, use `MarkdownTag` for strongly-typed, IntelliSense-discoverable selectors:
+
+```csharp
+// Before — raw strings (still supported)
+Mq.Query(".h(1)").On(markdown).Run();
+Mq.Query(".code(\"rust\")").On(markdown).Run();
+
+// After — typed selectors
+Mq.Query(MarkdownTag.H1).On(markdown).Run();
+Mq.Query(MarkdownTag.H2).On(markdown).Run();
+Mq.Query(MarkdownTag.Code).On(markdown).Run();       // all code blocks
+Mq.Query(MarkdownTag.Link).On(markdown).Run();
+Mq.Query(MarkdownTag.List).On(markdown).Run();
+```
+
+#### Well-known tags
+
+| Tag | Selector | Description |
+|-----|----------|-------------|
+| `MarkdownTag.H1` – `MarkdownTag.H6` | `.h(1)` – `.h(6)` | Heading at a specific level |
+| `MarkdownTag.AllHeadings` | `.h` | All headings (any level) |
+| `MarkdownTag.Paragraph` / `MarkdownTag.Text` | `.text` | Paragraph / text nodes |
+| `MarkdownTag.Code` | `.code` | All fenced code blocks |
+| `MarkdownTag.InlineCode` | `.code_inline` | Inline code spans |
+| `MarkdownTag.Link` | `.link` | Link nodes |
+| `MarkdownTag.Image` | `.image` | Image nodes |
+| `MarkdownTag.List` | `.list` | List items |
+| `MarkdownTag.Blockquote` | `.blockquote` | Block quotes |
+| `MarkdownTag.Table` | `.table` | Tables |
+| `MarkdownTag.HorizontalRule` | `.horizontal_rule` | Horizontal rules |
+| `MarkdownTag.LineBreak` | `.break` | Line breaks |
+| `MarkdownTag.Footnote` | `.footnote` | Footnotes |
+| `MarkdownTag.MathInline` | `.math_inline` | Inline math |
+| `MarkdownTag.Html` | `.html` | Raw HTML nodes |
+
+#### Factory methods
+
+```csharp
+// Language-filtered code blocks
+Mq.Query(MarkdownTag.CodeBlock("rust")).On(markdown).Run();
+
+// Heading at a specific level (1–6)
+Mq.Query(MarkdownTag.HeadingLevel(3)).On(markdown).Run();
+
+// Heading range — inclusive (both ends included)
+Mq.Query(MarkdownTag.HeadingRange(1, 3)).On(markdown).Run();  // H1, H2, H3
+
+// Heading range — C# Range syntax (exclusive end, follows C# Range convention)
+Mq.Query(MarkdownTag.Heading(1..3)).On(markdown).Run();   // H1, H2 (NOT H3 — exclusive end)
+Mq.Query(MarkdownTag.Heading(1..)).On(markdown).Run();    // H1–H6 (open end)
+Mq.Query(MarkdownTag.Heading(^3..)).On(markdown).Run();   // H3–H6 (from-end index)
+```
+
+> **Range semantics note:** `HeadingRange(from, to)` uses **inclusive** bounds — `HeadingRange(1, 3)` selects H1, H2, and H3. `Heading(Range)` follows standard **C# Range** semantics with an exclusive end — `Heading(1..3)` selects H1 and H2 only.
+
+#### Convenience methods
+
+```csharp
+// Shorthand for Mq.Query(MarkdownTag.HeadingLevel(1))
+Mq.Heading(1).On(markdown).Run();
+
+// Shorthand for Mq.Query(MarkdownTag.CodeBlock("rust"))
+Mq.CodeBlock("rust").On(markdown).Run();
+```
+
 ### MqEngine (reuse across multiple queries)
 
 ```csharp
