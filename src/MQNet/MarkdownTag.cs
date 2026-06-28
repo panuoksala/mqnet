@@ -1,0 +1,121 @@
+namespace MQNet;
+
+/// <summary>
+/// Identifies a Markdown node type for use in mq queries.
+/// This is a value type; two <see cref="MarkdownTag"/> values with the same
+/// <see cref="Selector"/> string are considered equal.
+/// </summary>
+/// <remarks>
+/// Use the static well-known properties (e.g. <see cref="H1"/>, <see cref="Paragraph"/>)
+/// to obtain pre-built instances. The parameterless <c>default</c> value has a
+/// <see langword="null"/> <see cref="Selector"/> and is not equal to any named tag.
+/// </remarks>
+public readonly struct MarkdownTag : IEquatable<MarkdownTag>
+{
+    // ── Private constructor ──────────────────────────────────────────────────
+
+    private MarkdownTag(string selector)
+    {
+        Selector = selector;
+    }
+
+    // ── Public API ───────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// The mq selector string for this tag (e.g. <c>".h(1)"</c>, <c>".text"</c>).
+    /// Is <see langword="null"/> for <c>default(MarkdownTag)</c>.
+    /// </summary>
+    public string? Selector { get; }
+
+    // ── Well-known static members ────────────────────────────────────────────
+
+    /// <summary>Selects level-1 headings (<c>.h(1)</c>).</summary>
+    public static MarkdownTag H1 { get; } = new(".h(1)");
+
+    /// <summary>Selects level-2 headings (<c>.h(2)</c>).</summary>
+    public static MarkdownTag H2 { get; } = new(".h(2)");
+
+    /// <summary>Selects level-3 headings (<c>.h(3)</c>).</summary>
+    public static MarkdownTag H3 { get; } = new(".h(3)");
+
+    /// <summary>Selects level-4 headings (<c>.h(4)</c>).</summary>
+    public static MarkdownTag H4 { get; } = new(".h(4)");
+
+    /// <summary>Selects level-5 headings (<c>.h(5)</c>).</summary>
+    public static MarkdownTag H5 { get; } = new(".h(5)");
+
+    /// <summary>Selects level-6 headings (<c>.h(6)</c>).</summary>
+    public static MarkdownTag H6 { get; } = new(".h(6)");
+
+    /// <summary>Selects all headings regardless of level (<c>.h</c>).</summary>
+    public static MarkdownTag Heading { get; } = new(".h");
+
+    /// <summary>Selects paragraph (text) nodes (<c>.text</c>).</summary>
+    public static MarkdownTag Paragraph { get; } = new(".text");
+
+    /// <summary>
+    /// Alias for <see cref="Paragraph"/>. Selects paragraph (text) nodes (<c>.text</c>).
+    /// </summary>
+    public static MarkdownTag Text => Paragraph;
+
+    /// <summary>Selects list nodes (<c>.list</c>).</summary>
+    public static MarkdownTag List { get; } = new(".list");
+
+    /// <summary>Selects fenced code block nodes (<c>.code</c>).</summary>
+    public static MarkdownTag Code { get; } = new(".code");
+
+    /// <summary>Selects inline code spans (<c>.code_inline</c>).</summary>
+    public static MarkdownTag InlineCode { get; } = new(".code_inline");
+
+    /// <summary>Selects hyperlink nodes (<c>.link</c>).</summary>
+    public static MarkdownTag Link { get; } = new(".link");
+
+    /// <summary>Selects image nodes (<c>.image</c>).</summary>
+    public static MarkdownTag Image { get; } = new(".image");
+
+    /// <summary>Selects horizontal rule (thematic break) nodes (<c>.horizontal_rule</c>).</summary>
+    public static MarkdownTag HorizontalRule { get; } = new(".horizontal_rule");
+
+    /// <summary>Selects line-break nodes (<c>.break</c>).</summary>
+    public static MarkdownTag LineBreak { get; } = new(".break");
+
+    /// <summary>Selects blockquote nodes (<c>.blockquote</c>).</summary>
+    public static MarkdownTag Blockquote { get; } = new(".blockquote");
+
+    /// <summary>Selects table nodes (<c>.table</c>).</summary>
+    public static MarkdownTag Table { get; } = new(".table");
+
+    /// <summary>Selects footnote nodes (<c>.footnote</c>).</summary>
+    public static MarkdownTag Footnote { get; } = new(".footnote");
+
+    /// <summary>Selects inline math nodes (<c>.math_inline</c>).</summary>
+    public static MarkdownTag MathInline { get; } = new(".math_inline");
+
+    /// <summary>Selects raw HTML nodes (<c>.html</c>).</summary>
+    public static MarkdownTag Html { get; } = new(".html");
+
+    // ── Equality ─────────────────────────────────────────────────────────────
+
+    /// <inheritdoc/>
+    public bool Equals(MarkdownTag other) =>
+        StringComparer.Ordinal.Equals(Selector, other.Selector);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) =>
+        obj is MarkdownTag other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() =>
+        Selector is null ? 0 : StringComparer.Ordinal.GetHashCode(Selector);
+
+    /// <summary>Returns <see langword="true"/> if the two tags have the same selector.</summary>
+    public static bool operator ==(MarkdownTag left, MarkdownTag right) => left.Equals(right);
+
+    /// <summary>Returns <see langword="true"/> if the two tags have different selectors.</summary>
+    public static bool operator !=(MarkdownTag left, MarkdownTag right) => !left.Equals(right);
+
+    // ── ToString ──────────────────────────────────────────────────────────────
+
+    /// <summary>Returns the <see cref="Selector"/> string.</summary>
+    public override string? ToString() => Selector;
+}
