@@ -77,6 +77,10 @@ public class MarkdownTagTests
     [Fact]
     public void ToString_Paragraph_ReturnsSelector() => Assert.Equal(".text", MarkdownTag.Paragraph.ToString());
 
+    [Fact]
+    public void Default_ToString_IsNull()
+        => Assert.Null(default(MarkdownTag).ToString());
+
     // ── Equality ─────────────────────────────────────────────────────────────
 
     [Fact]
@@ -106,6 +110,7 @@ public class MarkdownTagTests
     [Fact]
     public void GetHashCode_DifferentForDifferentTags()
     {
+        // Not a contract requirement — smoke-check that two distinct values don't trivially collide.
         Assert.NotEqual(MarkdownTag.H1.GetHashCode(), MarkdownTag.H2.GetHashCode());
     }
 
