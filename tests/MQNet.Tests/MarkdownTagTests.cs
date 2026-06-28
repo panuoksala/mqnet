@@ -25,7 +25,7 @@ public class MarkdownTagTests
     public void H6_Selector_IsCorrect() => Assert.Equal(".h(6)", MarkdownTag.H6.Selector);
 
     [Fact]
-    public void Heading_Selector_IsCorrect() => Assert.Equal(".h", MarkdownTag.Heading.Selector);
+    public void AllHeadings_Selector_IsCorrect() => Assert.Equal(".h", MarkdownTag.AllHeadings.Selector);
 
     [Fact]
     public void Paragraph_Selector_IsCorrect() => Assert.Equal(".text", MarkdownTag.Paragraph.Selector);
@@ -205,52 +205,56 @@ public class MarkdownTagTests
     public void HeadingRange_ToOutOfRange_ThrowsArgumentOutOfRangeException()
         => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.HeadingRange(1, 7));
 
-    // ── HeadingByRange factory ────────────────────────────────────────────────
+    // ── Heading(Range) factory ────────────────────────────────────────────────
 
     [Fact]
-    public void HeadingByRange_1_3_SelectorIsCorrect()
-        => Assert.Equal(".h(1..2)", MarkdownTag.HeadingByRange(1..3).Selector);
+    public void Heading_Range_1_3_SelectorIsCorrect()
+        => Assert.Equal(".h(1..2)", MarkdownTag.Heading(1..3).Selector);
 
     [Fact]
-    public void HeadingByRange_2_5_SelectorIsCorrect()
-        => Assert.Equal(".h(2..4)", MarkdownTag.HeadingByRange(2..5).Selector);
+    public void Heading_Range_2_5_SelectorIsCorrect()
+        => Assert.Equal(".h(2..4)", MarkdownTag.Heading(2..5).Selector);
 
     [Fact]
-    public void HeadingByRange_1_2_CollapsesToSingleLevel()
-        => Assert.Equal(".h(1)", MarkdownTag.HeadingByRange(1..2).Selector);
+    public void Heading_Range_1_2_CollapsesToSingleLevel()
+        => Assert.Equal(".h(1)", MarkdownTag.Heading(1..2).Selector);
 
     [Fact]
-    public void HeadingByRange_OpenStart_3_SelectorIsCorrect()
-        => Assert.Equal(".h(1..2)", MarkdownTag.HeadingByRange(..3).Selector);
+    public void Heading_Range_OpenStart_3_SelectorIsCorrect()
+        => Assert.Equal(".h(1..2)", MarkdownTag.Heading(..3).Selector);
 
     [Fact]
-    public void HeadingByRange_1_OpenEnd_SelectorIsCorrect()
-        => Assert.Equal(".h(1..6)", MarkdownTag.HeadingByRange(1..).Selector);
+    public void Heading_Range_1_OpenEnd_SelectorIsCorrect()
+        => Assert.Equal(".h(1..6)", MarkdownTag.Heading(1..).Selector);
 
     [Fact]
-    public void HeadingByRange_FullOpen_SelectorIsCorrect()
-        => Assert.Equal(".h(1..6)", MarkdownTag.HeadingByRange(..).Selector);
+    public void Heading_Range_FullOpen_SelectorIsCorrect()
+        => Assert.Equal(".h(1..6)", MarkdownTag.Heading(..).Selector);
 
     [Fact]
-    public void HeadingByRange_FromEnd3_OpenEnd_SelectorIsCorrect()
-        => Assert.Equal(".h(3..6)", MarkdownTag.HeadingByRange(^3..).Selector);
+    public void Heading_Range_FromEnd3_OpenEnd_SelectorIsCorrect()
+        => Assert.Equal(".h(3..6)", MarkdownTag.Heading(^3..).Selector);
 
     [Fact]
-    public void HeadingByRange_OpenStart_FromEnd1_SelectorIsCorrect()
-        => Assert.Equal(".h(1..4)", MarkdownTag.HeadingByRange(..^1).Selector);
+    public void Heading_Range_OpenStart_FromEnd1_SelectorIsCorrect()
+        => Assert.Equal(".h(1..4)", MarkdownTag.Heading(..^1).Selector);
 
     [Theory]
     [InlineData(3, 3)]   // empty range: excl=3, incl=2 < from=3
-    [InlineData(3, 1)]   // inverted: incl=0 out of bounds
+    [InlineData(3, 1)]   // end resolves to inclusiveTo=0 which is out of bounds (triggers bounds guard, not inversion guard)
     [InlineData(1, 8)]   // end out of bounds: incl=7 > 6
-    public void HeadingByRange_Invalid_ThrowsArgumentOutOfRangeException(int start, int end)
-        => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.HeadingByRange(start..end));
+    public void Heading_Range_Invalid_ThrowsArgumentOutOfRangeException(int start, int end)
+        => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.Heading(start..end));
+
+    [Fact]
+    public void Heading_Range_Inverted_ThrowsArgumentOutOfRangeException()
+        => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.Heading(4..2));
 
     // Note: 0..3 is indistinguishable from ..3 at the Range level (both produce Range(Index(0,false), Index(3,false))),
     // so 0..3 is treated as an open-start range resolving to from=1, not as an error.
     [Fact]
-    public void HeadingByRange_0_3_TreatedAsOpenStart()
-        => Assert.Equal(".h(1..2)", MarkdownTag.HeadingByRange(0..3).Selector);
+    public void Heading_Range_0_3_TreatedAsOpenStart()
+        => Assert.Equal(".h(1..2)", MarkdownTag.Heading(0..3).Selector);
 
     // ── CodeBlock factory ─────────────────────────────────────────────────────
 

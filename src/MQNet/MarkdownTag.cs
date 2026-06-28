@@ -48,7 +48,7 @@ public readonly struct MarkdownTag : IEquatable<MarkdownTag>
     public static MarkdownTag H6 { get; } = new(".h(6)");
 
     /// <summary>Selects all headings regardless of level (<c>.h</c>).</summary>
-    public static MarkdownTag Heading { get; } = new(".h");
+    public static MarkdownTag AllHeadings { get; } = new(".h");
 
     /// <summary>Selects paragraph (text) nodes (<c>.text</c>).</summary>
     public static MarkdownTag Paragraph { get; } = new(".text");
@@ -153,7 +153,7 @@ public readonly struct MarkdownTag : IEquatable<MarkdownTag>
     /// Thrown when the resolved start or inclusive end is outside 1–6, or when start is greater than
     /// the inclusive end (empty or inverted range).
     /// </exception>
-    public static MarkdownTag HeadingByRange(Range levels)
+    public static MarkdownTag Heading(Range levels)
     {
         // Resolve start.
         // Open start (..x or ..) compiles to: IsFromEnd=false, Value=0 → treat as 1.
