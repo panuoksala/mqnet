@@ -137,6 +137,55 @@ public readonly struct MarkdownTag : IEquatable<MarkdownTag>
     }
 
     /// <summary>
+    /// Creates a <see cref="MarkdownTag"/> that selects headings within a C# <see cref="Range"/> of levels,
+    /// using exclusive-end semantics (as C# ranges do) translated to mq's inclusive range selector.
+    /// </summary>
+    /// <param name="levels">
+    /// A C# <see cref="Range"/> using exclusive-end semantics over heading levels 1–6.
+    /// Examples: <c>1..3</c> selects H1–H2; <c>1..</c> selects H1–H6; <c>..3</c> selects H1–H2;
+    /// <c>..</c> selects H1–H6; <c>^3..</c> selects H3–H6; <c>..^1</c> selects H1–H4.
+    /// </param>
+    /// <returns>
+    /// A <see cref="MarkdownTag"/> whose <see cref="Selector"/> is <c>.h(from..to)</c> for a range,
+    /// or <c>.h(n)</c> when the range resolves to a single level.
+    /// </returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when the resolved start or inclusive end is outside 1–6, or when start is greater than
+    /// the inclusive end (empty or inverted range).
+    /// </exception>
+    public static MarkdownTag HeadingByRange(Range levels)
+    {
+        // Resolve start.
+        // Open start (..x or ..) compiles to: IsFromEnd=false, Value=0 → treat as 1.
+        // From-end (^n..)       compiles to: IsFromEnd=true,  Value=n → 6 - n.
+        // Explicit (n..)        compiles to: IsFromEnd=false, Value=n → n.
+        int from = levels.Start.IsFromEnd
+            ? 6 - levels.Start.Value               // ^n → 6-n
+            : (levels.Start.Value == 0 ? 1 : levels.Start.Value);  // open → 1, else n
+
+        // Resolve end (exclusive).
+        // Open end (x.. or ..) compiles to: IsFromEnd=true,  Value=0 → treat as 7.
+        // From-end (..^n)       compiles to: IsFromEnd=true,  Value=n → 6 - n.
+        // Explicit (..n)        compiles to: IsFromEnd=false, Value=n → n.
+        int exclusiveEnd = levels.End.IsFromEnd
+            ? (levels.End.Value == 0 ? 7 : 6 - levels.End.Value)  // open → 7, ^n → 6-n
+            : levels.End.Value;                    // n
+
+        int inclusiveTo = exclusiveEnd - 1;
+
+        if (from < 1 || from > 6)
+            throw new ArgumentOutOfRangeException(nameof(levels), levels, "Resolved start heading level must be between 1 and 6 inclusive.");
+        if (inclusiveTo < 1 || inclusiveTo > 6)
+            throw new ArgumentOutOfRangeException(nameof(levels), levels, "Resolved end heading level must be between 1 and 6 inclusive.");
+        if (from > inclusiveTo)
+            throw new ArgumentOutOfRangeException(nameof(levels), levels, "The resolved start level must not be greater than the resolved end level.");
+
+        return from == inclusiveTo
+            ? new MarkdownTag($".h({from})")
+            : new MarkdownTag($".h({from}..{inclusiveTo})");
+    }
+
+    /// <summary>
     /// Creates a <see cref="MarkdownTag"/> that selects fenced code blocks with the specified language identifier.
     /// </summary>
     /// <param name="language">
