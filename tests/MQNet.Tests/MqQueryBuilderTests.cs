@@ -138,4 +138,10 @@ public class MqQueryBuilderTests
         Assert.Single(result);
         Assert.Equal("# Hello", result[0]);
     }
+
+    [Fact]
+    public void Query_DefaultMarkdownTag_ThrowsArgumentException()
+    {
+        Assert.Throws<ArgumentException>(() => Mq.Query(default(MarkdownTag)));
+    }
 }

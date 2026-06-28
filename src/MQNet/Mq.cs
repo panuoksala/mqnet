@@ -17,7 +17,18 @@ public static class Mq
     /// (e.g. <see cref="MarkdownTag.H1"/>, <see cref="MarkdownTag.Code"/>).
     /// </param>
     /// <returns>A new <see cref="MqQueryBuilder"/> for the selector of the given <paramref name="tag"/>.</returns>
-    public static MqQueryBuilder Query(MarkdownTag tag) => new(tag.Selector!);
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="tag"/> is a default <see cref="MarkdownTag"/> (i.e. its
+    /// <see cref="MarkdownTag.Selector"/> is <see langword="null"/>).
+    /// </exception>
+    public static MqQueryBuilder Query(MarkdownTag tag)
+    {
+        if (tag.Selector is null)
+            throw new ArgumentException(
+                "Cannot query with a default MarkdownTag. Use a named tag such as MarkdownTag.H1.",
+                nameof(tag));
+        return new(tag.Selector);
+    }
 }
 
 /// <summary>
