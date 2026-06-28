@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  MQ_TAG: v0.5.31
+  MQ_TAG: v0.5.36
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_NOLOGO: true
 
