@@ -152,4 +152,78 @@ public class MarkdownTagTests
         var d2 = default(MarkdownTag);
         Assert.Equal(d1, d2);
     }
+
+    // ── HeadingLevel factory ──────────────────────────────────────────────────
+
+    [Fact]
+    public void HeadingLevel_1_SelectorIsCorrect()
+        => Assert.Equal(".h(1)", MarkdownTag.HeadingLevel(1).Selector);
+
+    [Fact]
+    public void HeadingLevel_3_SelectorIsCorrect()
+        => Assert.Equal(".h(3)", MarkdownTag.HeadingLevel(3).Selector);
+
+    [Fact]
+    public void HeadingLevel_6_SelectorIsCorrect()
+        => Assert.Equal(".h(6)", MarkdownTag.HeadingLevel(6).Selector);
+
+    [Fact]
+    public void HeadingLevel_0_ThrowsArgumentOutOfRangeException()
+        => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.HeadingLevel(0));
+
+    [Fact]
+    public void HeadingLevel_7_ThrowsArgumentOutOfRangeException()
+        => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.HeadingLevel(7));
+
+    // ── HeadingRange factory ──────────────────────────────────────────────────
+
+    [Fact]
+    public void HeadingRange_1_3_SelectorIsCorrect()
+        => Assert.Equal(".h(1..3)", MarkdownTag.HeadingRange(1, 3).Selector);
+
+    [Fact]
+    public void HeadingRange_2_5_SelectorIsCorrect()
+        => Assert.Equal(".h(2..5)", MarkdownTag.HeadingRange(2, 5).Selector);
+
+    [Fact]
+    public void HeadingRange_1_1_SelectorIsCorrect()
+        => Assert.Equal(".h(1..1)", MarkdownTag.HeadingRange(1, 1).Selector);
+
+    [Fact]
+    public void HeadingRange_FromGreaterThanTo_ThrowsArgumentOutOfRangeException()
+        => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.HeadingRange(3, 1));
+
+    [Fact]
+    public void HeadingRange_FromOutOfRange_ThrowsArgumentOutOfRangeException()
+        => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.HeadingRange(0, 3));
+
+    [Fact]
+    public void HeadingRange_ToOutOfRange_ThrowsArgumentOutOfRangeException()
+        => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.HeadingRange(1, 7));
+
+    // ── CodeBlock factory ─────────────────────────────────────────────────────
+
+    [Fact]
+    public void CodeBlock_Rust_SelectorIsCorrect()
+        => Assert.Equal(".code(\"rust\")", MarkdownTag.CodeBlock("rust").Selector);
+
+    [Fact]
+    public void CodeBlock_Python_SelectorIsCorrect()
+        => Assert.Equal(".code(\"python\")", MarkdownTag.CodeBlock("python").Selector);
+
+    [Fact]
+    public void CodeBlock_Null_ThrowsArgumentException()
+        => Assert.Throws<ArgumentException>(() => MarkdownTag.CodeBlock(null!));
+
+    [Fact]
+    public void CodeBlock_Empty_ThrowsArgumentException()
+        => Assert.Throws<ArgumentException>(() => MarkdownTag.CodeBlock(""));
+
+    [Fact]
+    public void CodeBlock_Whitespace_ThrowsArgumentException()
+        => Assert.Throws<ArgumentException>(() => MarkdownTag.CodeBlock(" "));
+
+    [Fact]
+    public void CodeBlock_EmbeddedDoubleQuote_ThrowsArgumentException()
+        => Assert.Throws<ArgumentException>(() => MarkdownTag.CodeBlock("a\"b"));
 }

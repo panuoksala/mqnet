@@ -94,6 +94,69 @@ public readonly struct MarkdownTag : IEquatable<MarkdownTag>
     /// <summary>Selects raw HTML nodes (<c>.html</c>).</summary>
     public static MarkdownTag Html { get; } = new(".html");
 
+    // ── Factory methods ──────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Creates a <see cref="MarkdownTag"/> that selects headings at the specified level.
+    /// </summary>
+    /// <param name="level">Heading level, 1–6 inclusive.</param>
+    /// <returns>A <see cref="MarkdownTag"/> whose <see cref="Selector"/> is <c>.h(<paramref name="level"/>)</c>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="level"/> is less than 1 or greater than 6.
+    /// </exception>
+    public static MarkdownTag HeadingLevel(int level)
+    {
+        if (level < 1 || level > 6)
+            throw new ArgumentOutOfRangeException(nameof(level), level, "Heading level must be between 1 and 6 inclusive.");
+        return new MarkdownTag($".h({level})");
+    }
+
+    /// <summary>
+    /// Creates a <see cref="MarkdownTag"/> that selects headings within an inclusive level range.
+    /// </summary>
+    /// <param name="from">First heading level in the range, 1–6 inclusive.</param>
+    /// <param name="to">Last heading level in the range, 1–6 inclusive. Must be ≥ <paramref name="from"/>.</param>
+    /// <returns>
+    /// A <see cref="MarkdownTag"/> whose <see cref="Selector"/> is <c>.h(<paramref name="from"/>..<paramref name="to"/>)</c>.
+    /// </returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="from"/> or <paramref name="to"/> is outside 1–6,
+    /// or when <paramref name="from"/> is greater than <paramref name="to"/>.
+    /// </exception>
+    public static MarkdownTag HeadingRange(int from, int to)
+    {
+        if (from < 1 || from > 6)
+            throw new ArgumentOutOfRangeException(nameof(from), from, "Heading level must be between 1 and 6 inclusive.");
+        if (to < 1 || to > 6)
+            throw new ArgumentOutOfRangeException(nameof(to), to, "Heading level must be between 1 and 6 inclusive.");
+        if (from > to)
+            throw new ArgumentOutOfRangeException(nameof(from), from, "The 'from' level must not be greater than the 'to' level.");
+        return new MarkdownTag($".h({from}..{to})");
+    }
+
+    /// <summary>
+    /// Creates a <see cref="MarkdownTag"/> that selects fenced code blocks with the specified language identifier.
+    /// </summary>
+    /// <param name="language">
+    /// The language identifier (e.g. <c>"rust"</c>, <c>"python"</c>).
+    /// Must be non-null, non-empty, non-whitespace, and must not contain a double-quote character.
+    /// </param>
+    /// <returns>
+    /// A <see cref="MarkdownTag"/> whose <see cref="Selector"/> is <c>.code("<paramref name="language"/>")</c>.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="language"/> is <see langword="null"/>, empty, whitespace-only,
+    /// or contains a double-quote character.
+    /// </exception>
+    public static MarkdownTag CodeBlock(string language)
+    {
+        if (string.IsNullOrWhiteSpace(language))
+            throw new ArgumentException("Language must be a non-empty, non-whitespace string.", nameof(language));
+        if (language.Contains('"'))
+            throw new ArgumentException("Language must not contain double-quote characters.", nameof(language));
+        return new MarkdownTag($".code(\"{language}\")");
+    }
+
     // ── Equality ─────────────────────────────────────────────────────────────
 
     /// <inheritdoc/>
