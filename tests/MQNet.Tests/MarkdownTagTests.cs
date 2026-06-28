@@ -229,6 +229,8 @@ public class MarkdownTagTests
 
     [Fact]
     public void Heading_Range_FullOpen_SelectorIsCorrect()
+        // Note: Heading(..) → ".h(1..6)" (levels 1–6 inclusive); this differs from AllHeadings → ".h" (bare selector).
+        // The mq engine may treat them differently; use AllHeadings for the unfiltered heading query.
         => Assert.Equal(".h(1..6)", MarkdownTag.Heading(..).Selector);
 
     [Fact]
@@ -249,6 +251,14 @@ public class MarkdownTagTests
     [Fact]
     public void Heading_Range_Inverted_ThrowsArgumentOutOfRangeException()
         => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.Heading(4..2));
+
+    [Fact]
+    public void Heading_Range_FromEnd_StartAtZero_ThrowsArgumentOutOfRangeException()
+        => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.Heading(^6..));  // ^6 = 6-6 = 0, out of range
+
+    [Fact]
+    public void Heading_Range_FromEnd_EndAtZero_ThrowsArgumentOutOfRangeException()
+        => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.Heading(..^6));  // ^6 from end = exclusiveEnd 0, inclusiveTo -1
 
     // Note: 0..3 is indistinguishable from ..3 at the Range level (both produce Range(Index(0,false), Index(3,false))),
     // so 0..3 is treated as an open-start range resolving to from=1, not as an error.

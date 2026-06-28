@@ -125,6 +125,11 @@ public readonly struct MarkdownTag : IEquatable<MarkdownTag>
     /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="from"/> is greater than <paramref name="to"/>.
     /// </exception>
+    /// <remarks>
+    /// <para>Note: <c>HeadingRange(n, n)</c> produces <c>.h(n..n)</c> (a range selector), not <c>.h(n)</c>.
+    /// This is intentional — use <see cref="HeadingLevel"/> for single-level queries.</para>
+    /// <para>By contrast, <see cref="Heading(Range)"/> collapses single-level results to <c>.h(n)</c>.</para>
+    /// </remarks>
     public static MarkdownTag HeadingRange(int from, int to)
     {
         if (from < 1 || from > 6)
