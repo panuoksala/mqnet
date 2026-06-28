@@ -119,6 +119,33 @@ string text = Mq.Query(".h1")
 
 Internally `MqQueryBuilder.Run()` creates a short-lived `MqEngine`, calls `Eval()`, disposes it, and returns the result. For bulk queries, use `MqEngine` directly to avoid the per-call engine creation overhead.
 
+### `MarkdownTag`
+
+Strongly-typed, discoverable mq selector values. Use instead of raw query strings.
+
+```csharp
+// Well-known tags
+Mq.Query(MarkdownTag.H1).On(markdown).Run();
+Mq.Query(MarkdownTag.Code).On(markdown).Run();
+
+// Factory methods
+Mq.Query(MarkdownTag.HeadingLevel(3)).On(markdown).Run();          // .h(3)
+Mq.Query(MarkdownTag.HeadingRange(1, 3)).On(markdown).Run();       // .h(1..3) — inclusive
+Mq.Query(MarkdownTag.Heading(1..3)).On(markdown).Run();            // .h(1..2) — C# Range, exclusive end
+Mq.Query(MarkdownTag.Heading(1..)).On(markdown).Run();             // .h(1..6) — open end reaches H6
+Mq.Query(MarkdownTag.Heading(^3..)).On(markdown).Run();            // .h(3..6) — from-end index, H3–H6
+Mq.Query(MarkdownTag.CodeBlock("rust")).On(markdown).Run();        // .code("rust")
+
+// Convenience entry points
+Mq.Heading(1).On(markdown).Run();        // shorthand for HeadingLevel(1)
+Mq.CodeBlock("rust").On(markdown).Run(); // shorthand for CodeBlock("rust")
+```
+
+`MarkdownTag` is a `readonly struct` with:
+- **Well-known static properties:** `H1`–`H6`, `AllHeadings`, `Paragraph`/`Text`, `Code`, `InlineCode`, `Link`, `Image`, `List`, `HorizontalRule`, `LineBreak`, `Blockquote`, `Table`, `Footnote`, `MathInline`, `Html`
+- **Factory methods:** `HeadingLevel(int)`, `HeadingRange(int, int)` (inclusive), `Heading(Range)` (C# exclusive-end), `CodeBlock(string)`
+- Raw string queries via `Mq.Query(string)` remain fully supported.
+
 ### `InputFormat` enum
 
 | Value | Description |

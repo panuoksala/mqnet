@@ -5,7 +5,7 @@ namespace MQNet;
 
 /// <summary>
 /// Wraps the mq native engine. Create once, call Eval multiple times, then Dispose.
-/// For single-query convenience, use <see cref="Mq.Query"/> instead.
+/// For single-query convenience, use <see cref="Mq.Query(string)"/> or <see cref="Mq.Query(MarkdownTag)"/> instead.
 /// </summary>
 public sealed class MqEngine : IDisposable
 {
