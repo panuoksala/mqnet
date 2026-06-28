@@ -135,6 +135,7 @@ public class MqQueryBuilderTests
     public void Query_MarkdownTagH1_WithFormat_ReturnsH1()
     {
         var result = Mq.Query(MarkdownTag.H1).On("# Hello").WithFormat(InputFormat.Markdown).Run();
+
         Assert.Single(result);
         Assert.Equal("# Hello", result[0]);
     }
@@ -173,6 +174,58 @@ public class MqQueryBuilderTests
     public void Heading_Level7_ThrowsArgumentOutOfRangeException()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => Mq.Heading(7));
+    }
+
+    // Mq.Heading(int from, int to) — inclusive range
+
+    [Fact]
+    public void Heading_InclusiveRange_MatchesQueryHeadingRange()
+    {
+        // Mq.Heading(1, 2) is shorthand for Query(MarkdownTag.HeadingRange(1, 2))
+        var convenience = Mq.Heading(1, 2).On("# H1\n\n## H2\n\n### H3").Run();
+        var direct = Mq.Query(MarkdownTag.HeadingRange(1, 2)).On("# H1\n\n## H2\n\n### H3").Run();
+        Assert.Equal(direct.Values, convenience.Values);
+    }
+
+    [Fact]
+    public void Heading_InclusiveRange_InvalidFrom_ThrowsArgumentOutOfRangeException()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => Mq.Heading(0, 3));
+    }
+
+    [Fact]
+    public void Heading_InclusiveRange_InvalidTo_ThrowsArgumentOutOfRangeException()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => Mq.Heading(1, 7));
+    }
+
+    [Fact]
+    public void Heading_InclusiveRange_Inverted_ThrowsArgumentOutOfRangeException()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => Mq.Heading(3, 1));
+    }
+
+    // Mq.Heading(Range) — C# exclusive-end
+
+    [Fact]
+    public void Heading_CSharpRange_MatchesQueryMarkdownTagHeading()
+    {
+        // Mq.Heading(1..3) is shorthand for Query(MarkdownTag.Heading(1..3))
+        var convenience = Mq.Heading(1..3).On("# H1\n\n## H2\n\n### H3").Run();
+        var direct = Mq.Query(MarkdownTag.Heading(1..3)).On("# H1\n\n## H2\n\n### H3").Run();
+        Assert.Equal(direct.Values, convenience.Values);
+    }
+
+    [Fact]
+    public void Heading_CSharpRange_EmptyRange_ThrowsArgumentOutOfRangeException()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => Mq.Heading(3..3));
+    }
+
+    [Fact]
+    public void Heading_CSharpRange_Inverted_ThrowsArgumentOutOfRangeException()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => Mq.Heading(4..2));
     }
 
     [Fact]
