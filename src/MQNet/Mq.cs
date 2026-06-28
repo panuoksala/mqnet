@@ -29,6 +29,18 @@ public static class Mq
                 nameof(tag));
         return new(tag.Selector);
     }
+
+    /// <summary>Shorthand for <c>Query(MarkdownTag.HeadingLevel(level))</c>. Selects heading nodes at the specified level.</summary>
+    /// <param name="level">The heading level (1–6).</param>
+    /// <returns>A fluent <see cref="MqQueryBuilder"/> for the heading selector.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="level"/> is outside 1–6.</exception>
+    public static MqQueryBuilder Heading(int level) => Query(MarkdownTag.HeadingLevel(level));
+
+    /// <summary>Shorthand for <c>Query(MarkdownTag.CodeBlock(language))</c>. Selects fenced code blocks with the specified language.</summary>
+    /// <param name="language">The code block language (e.g. <c>"rust"</c>, <c>"python"</c>). Must not be null, empty, or contain a double-quote character.</param>
+    /// <returns>A fluent <see cref="MqQueryBuilder"/> for the language-filtered code selector.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="language"/> is null, empty, whitespace, or contains a double-quote character.</exception>
+    public static MqQueryBuilder Code(string language) => Query(MarkdownTag.CodeBlock(language));
 }
 
 /// <summary>
