@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0">
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -21,9 +21,7 @@
 
   <!-- Copy native DLL for local testing -->
   <ItemGroup>
-    <None Include="..\..\src\MQNet\native\win-x64\mq_ffi.dll"
-          Condition="Exists('../../src/MQNet/native/win-x64/mq_ffi.dll')"
-          Link="mq_ffi.dll">
+    <None Include="..\..\src\MQNet\native\win-x64\mq_ffi.dll" Condition="Exists('../../src/MQNet/native/win-x64/mq_ffi.dll')" Link="mq_ffi.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
