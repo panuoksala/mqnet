@@ -156,9 +156,9 @@ public class MqQueryBuilderTests
     }
 
     [Fact]
-    public void Code_Rust_MatchesQueryMarkdownTagCodeBlockRust()
+    public void CodeBlock_Rust_MatchesQueryMarkdownTagCodeBlockRust()
     {
-        var convenience = Mq.Code("rust").On("```rust\nfn main() {}\n```").Run();
+        var convenience = Mq.CodeBlock("rust").On("```rust\nfn main() {}\n```").Run();
         var direct = Mq.Query(MarkdownTag.CodeBlock("rust")).On("```rust\nfn main() {}\n```").Run();
         Assert.Equal(direct.Values, convenience.Values);
     }
@@ -170,8 +170,14 @@ public class MqQueryBuilderTests
     }
 
     [Fact]
-    public void Code_EmptyString_ThrowsArgumentException()
+    public void Heading_Level7_ThrowsArgumentOutOfRangeException()
     {
-        Assert.Throws<ArgumentException>(() => Mq.Code(""));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Mq.Heading(7));
+    }
+
+    [Fact]
+    public void CodeBlock_EmptyString_ThrowsArgumentException()
+    {
+        Assert.Throws<ArgumentException>(() => Mq.CodeBlock(""));
     }
 }

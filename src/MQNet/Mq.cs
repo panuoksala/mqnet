@@ -40,7 +40,7 @@ public static class Mq
     /// <param name="language">The code block language (e.g. <c>"rust"</c>, <c>"python"</c>). Must not be null, empty, or contain a double-quote character.</param>
     /// <returns>A fluent <see cref="MqQueryBuilder"/> for the language-filtered code selector.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="language"/> is null, empty, whitespace, or contains a double-quote character.</exception>
-    public static MqQueryBuilder Code(string language) => Query(MarkdownTag.CodeBlock(language));
+    public static MqQueryBuilder CodeBlock(string language) => Query(MarkdownTag.CodeBlock(language));
 }
 
 /// <summary>
