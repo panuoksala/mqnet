@@ -96,4 +96,46 @@ public class MqQueryBuilderTests
         var withPlainText = builder.WithPlainText();
         Assert.Same(builder, withPlainText);
     }
+
+    // --- Mq.Query(MarkdownTag) overload ---
+
+    [Fact]
+    public void Query_MarkdownTagH1_ExtractsH1()
+    {
+        var result = Mq.Query(MarkdownTag.H1).On("# Hello\n\n## World").Run();
+        Assert.Single(result);
+        Assert.Equal("# Hello", result[0]);
+    }
+
+    [Fact]
+    public void Query_MarkdownTagH2_ExtractsH2()
+    {
+        var result = Mq.Query(MarkdownTag.H2).On("# Hello\n\n## World").Run();
+        Assert.Single(result);
+        Assert.Equal("## World", result[0]);
+    }
+
+    [Fact]
+    public void Query_MarkdownTagCode_ExtractsCodeBlock()
+    {
+        var result = Mq.Query(MarkdownTag.Code).On("```rust\nfn main() {}\n```").Run();
+        Assert.Single(result);
+        Assert.Contains("fn main()", result[0]);
+    }
+
+    [Fact]
+    public void Query_MarkdownTagH1_WithPlainText_ReturnsPlainText()
+    {
+        var result = Mq.Query(MarkdownTag.H1).On("# Hello\n\n## World").WithPlainText().Run();
+        Assert.Single(result);
+        Assert.Equal("Hello", result[0]);
+    }
+
+    [Fact]
+    public void Query_MarkdownTagH1_WithFormat_ReturnsH1()
+    {
+        var result = Mq.Query(MarkdownTag.H1).On("# Hello").WithFormat(InputFormat.Markdown).Run();
+        Assert.Single(result);
+        Assert.Equal("# Hello", result[0]);
+    }
 }

@@ -5,11 +5,23 @@ public static class Mq
 {
     /// <summary>Starts a fluent query chain.</summary>
     /// <param name="query">The mq query string (e.g. ".h1", ".code(\"rust\")").</param>
+    /// <returns>A new <see cref="MqQueryBuilder"/> for the given query string.</returns>
     public static MqQueryBuilder Query(string query) => new(query);
+
+    /// <summary>
+    /// Starts a fluent query chain using a <see cref="MarkdownTag"/> selector.
+    /// Equivalent to calling <c>Query(tag.Selector)</c>.
+    /// </summary>
+    /// <param name="tag">
+    /// A <see cref="MarkdownTag"/> value whose <see cref="MarkdownTag.Selector"/> is used as the mq query string
+    /// (e.g. <see cref="MarkdownTag.H1"/>, <see cref="MarkdownTag.Code"/>).
+    /// </param>
+    /// <returns>A new <see cref="MqQueryBuilder"/> for the selector of the given <paramref name="tag"/>.</returns>
+    public static MqQueryBuilder Query(MarkdownTag tag) => new(tag.Selector!);
 }
 
 /// <summary>
-/// Fluent builder for mq queries. Obtain via <see cref="Mq.Query"/>.
+/// Fluent builder for mq queries. Obtain via <see cref="Mq.Query(string)"/> or <see cref="Mq.Query(MarkdownTag)"/>.
 /// For bulk queries over the same content, use <see cref="MqEngine"/> directly.
 /// </summary>
 public sealed class MqQueryBuilder
