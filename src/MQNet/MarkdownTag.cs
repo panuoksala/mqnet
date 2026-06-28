@@ -120,8 +120,10 @@ public readonly struct MarkdownTag : IEquatable<MarkdownTag>
     /// A <see cref="MarkdownTag"/> whose <see cref="Selector"/> is <c>.h(<paramref name="from"/>..<paramref name="to"/>)</c>.
     /// </returns>
     /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown when <paramref name="from"/> or <paramref name="to"/> is outside 1–6,
-    /// or when <paramref name="from"/> is greater than <paramref name="to"/>.
+    /// Thrown when <paramref name="from"/> or <paramref name="to"/> is outside the range 1–6.
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="from"/> is greater than <paramref name="to"/>.
     /// </exception>
     public static MarkdownTag HeadingRange(int from, int to)
     {

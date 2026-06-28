@@ -190,6 +190,10 @@ public class MarkdownTagTests
         => Assert.Equal(".h(1..1)", MarkdownTag.HeadingRange(1, 1).Selector);
 
     [Fact]
+    public void HeadingRange_2_2_SelectorIsCorrect()
+        => Assert.Equal(".h(2..2)", MarkdownTag.HeadingRange(2, 2).Selector);
+
+    [Fact]
     public void HeadingRange_FromGreaterThanTo_ThrowsArgumentOutOfRangeException()
         => Assert.Throws<ArgumentOutOfRangeException>(() => MarkdownTag.HeadingRange(3, 1));
 
