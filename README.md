@@ -203,6 +203,119 @@ var result = engine.Eval(".h | to_text", "# Hello\n\n## World");
 // result.Values → ["Hello", "World"]
 ```
 
+## Built-in Modules (v0.6+)
+
+mq ships 15 standard modules embedded in the native binary. Load them with `LoadModule` (global scope) or `ImportModule` (namespaced) on an `MqEngine` instance — no file paths required.
+
+```csharp
+using var engine = new MqEngine();
+
+// LoadModule puts functions in global scope
+engine.LoadModule("json");
+var result = engine.Eval("""
+    .code("json") | to_text | json_parse | json_stringify
+    """, markdown);
+
+// ImportModule requires a namespace prefix
+engine.ImportModule("semver");
+var ok = engine.Eval(
+    """semver::semver_satisfies("1.5.0", ">=1.0.0,<2.0.0")""",
+    "ignored", InputFormat.Text);
+// → ["true"]
+```
+
+### Available modules
+
+| Module | Load name | Key functions |
+|--------|-----------|---------------|
+| **md** | `"md"` | Build Markdown nodes — `h()`, `code()`, `text()`, `strong()`, `em()`, `link()`, `image()`, `list()`, `table_row()`, `doc()` |
+| **section** | `"section"` | Structure by headings — `sections()`, `section()`, `title_contains()`, `body()`, `toc()`, `collect()`, `split()`, `by_level()` |
+| **json** | `"json"` | `json_parse()`, `json_stringify()`, `json_to_markdown_table()` |
+| **yaml** | `"yaml"` | `yaml_parse()`, `yaml_stringify()`, `yaml_to_markdown_table()`, `to_frontmatter()` |
+| **toml** | `"toml"` | `toml_parse()`, `toml_stringify()`, `toml_to_json()`, `toml_to_markdown_table()` |
+| **csv** | `"csv"` | `csv_parse()`, `tsv_parse()`, `psv_parse()`, `csv_stringify()`, `csv_to_markdown_table()` |
+| **xml** | `"xml"` | `xml_parse()`, `xml_stringify()`, `xml_to_markdown_table()` |
+| **hcl** | `"hcl"` | `hcl_parse()`, `hcl_stringify()` — HashiCorp Configuration Language |
+| **semver** | `"semver"` | `semver_parse()`, `semver_compare()`, `semver_gt/lt/eq/gte/lte()`, `semver_sort()`, `semver_bump_major/minor/patch()`, `semver_satisfies()` |
+| **table** | `"table"` | Structured Markdown table manipulation — `tables()`, `add_row()`, `add_column()`, `filter_rows()`, `sort_rows()`, `to_csv()` |
+| **fuzzy** | `"fuzzy"` | Fuzzy string matching — `levenshtein()`, `jaro()`, `jaro_winkler()`, `fuzzy_match()`, `fuzzy_filter()` |
+| **cbor** | `"cbor"` | `cbor_parse()` (base64 or raw bytes), `cbor_stringify()` |
+| **toon** | `"toon"` | TOON format — `toon_parse()`, `toon_stringify()` |
+| **ast** | `"ast"` | mq AST introspection — `get_args()`, `to_code()` |
+| **test** | `"test"` | Testing framework — `assert_eq()`, `assert_true()`, `run_tests()`, `test_case()` |
+
+### Module examples
+
+**Parse a JSON code block and reformat it:**
+
+```csharp
+using var engine = new MqEngine();
+engine.LoadModule("json");
+
+string markdown = """
+    # Config
+
+    ```json
+    {"name":"acme","version":"1.0.0"}
+    ```
+    """;
+
+// Extract the JSON code block, parse it, then stringify
+var result = engine.Eval(
+    """.code("json") | to_text | json_parse | json_stringify""",
+    markdown);
+// result[0] → "{\"name\": \"acme\", \"version\": \"1.0.0\"}"
+```
+
+**Collect all headings as a table of contents:**
+
+```csharp
+using var engine = new MqEngine();
+engine.LoadModule("section");
+
+var toc = engine.Eval("sections(.) | toc", markdown);
+// result → ["- Introduction", "  - Background", "- Usage", ...]
+```
+
+**Check if a version matches a range:**
+
+```csharp
+using var engine = new MqEngine();
+engine.ImportModule("semver");
+
+var result = engine.Eval(
+    """semver::semver_satisfies("2.3.1", ">=2.0.0,<3.0.0")""",
+    "ignored", InputFormat.Text);
+// result[0] → "true"
+```
+
+**Build Markdown programmatically:**
+
+```csharp
+using var engine = new MqEngine();
+engine.LoadModule("md");
+
+var result = engine.Eval(
+    """doc(h("Hello", 1), text("World"), code("let x = 1;", "rust"))""",
+    "ignored", InputFormat.Text);
+// result[0] → "# Hello\n\nWorld\n\n```rust\nlet x = 1;\n```"
+```
+
+### User-defined modules
+
+Load `.mq` files from the file system with `SetSearchPaths`:
+
+```csharp
+using var engine = new MqEngine();
+engine.SetSearchPaths(["/path/to/my/modules"]);
+
+// Load myutils.mq — functions available in global scope
+engine.LoadModule("myutils");
+
+// Import myutils.mq — functions available as myutils::fn_name()
+engine.ImportModule("myutils");
+```
+
 ## Input Formats
 
 | Format | Description |
