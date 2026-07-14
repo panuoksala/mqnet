@@ -72,6 +72,12 @@ public static class Mq
     /// <returns>A fluent <see cref="MqQueryBuilder"/> for the language-filtered code selector.</returns>
     /// <exception cref="ArgumentException">Thrown when <paramref name="language"/> is null, empty, whitespace, or contains a double-quote character.</exception>
     public static MqQueryBuilder CodeBlock(string language) => Query(MarkdownTag.CodeBlock(language));
+
+    /// <summary>
+    /// Returns the version of the native mq-ffi library (e.g. <c>"0.6.5"</c>).
+    /// This delegates to <see cref="MqEngine.Version"/>.
+    /// </summary>
+    public static string Version => MqEngine.Version;
 }
 
 /// <summary>
