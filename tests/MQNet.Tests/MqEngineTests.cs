@@ -177,4 +177,232 @@ public class MqEngineTests
         var markdown = MqEngine.HtmlToMarkdown("");
         Assert.NotNull(markdown);
     }
+
+    // ── Engine configuration (v0.6.x) ────────────────────────────────────────
+
+    [Fact]
+    public void SetOptimizationLevel_None_DoesNotAffectEval()
+    {
+        using var engine = new MqEngine();
+        engine.SetOptimizationLevel(MqOptimizationLevel.None);
+        var result = engine.Eval(".h(1)", "# Hello");
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public void SetOptimizationLevel_Basic_DoesNotAffectEval()
+    {
+        using var engine = new MqEngine();
+        engine.SetOptimizationLevel(MqOptimizationLevel.Basic);
+        var result = engine.Eval(".h(1)", "# Hello");
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public void SetOptimizationLevel_Full_DoesNotAffectEval()
+    {
+        using var engine = new MqEngine();
+        engine.SetOptimizationLevel(MqOptimizationLevel.Full);
+        var result = engine.Eval(".h(1)", "# Hello");
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public void SetOptimizationLevel_AfterDispose_ThrowsObjectDisposedException()
+    {
+        var engine = new MqEngine();
+        engine.Dispose();
+        Assert.Throws<ObjectDisposedException>(() => engine.SetOptimizationLevel(MqOptimizationLevel.None));
+    }
+
+    [Fact]
+    public void SetMaxCallStackDepth_LowLimit_CausesErrorOnDeepRecursion()
+    {
+        using var engine = new MqEngine();
+        engine.SetMaxCallStackDepth(2);
+        var ex = Assert.Throws<MqException>(() =>
+            engine.Eval("def rec(): rec(); rec()", "test", InputFormat.Text));
+        Assert.NotEmpty(ex.Message);
+    }
+
+    [Fact]
+    public void SetMaxCallStackDepth_HighLimit_AllowsNormalEval()
+    {
+        using var engine = new MqEngine();
+        engine.SetMaxCallStackDepth(1000);
+        // A simple non-recursive query must still work after adjusting the limit.
+        var result = engine.Eval(".h(1)", "# Hello");
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public void SetMaxCallStackDepth_AfterDispose_ThrowsObjectDisposedException()
+    {
+        var engine = new MqEngine();
+        engine.Dispose();
+        Assert.Throws<ObjectDisposedException>(() => engine.SetMaxCallStackDepth(100));
+    }
+
+    [Fact]
+    public void SetSearchPaths_EmptyList_DoesNotThrow()
+    {
+        using var engine = new MqEngine();
+        engine.SetSearchPaths([]); // should be a no-op
+    }
+
+    [Fact]
+    public void SetSearchPaths_NullList_ThrowsArgumentNullException()
+    {
+        using var engine = new MqEngine();
+        Assert.Throws<ArgumentNullException>(() => engine.SetSearchPaths(null!));
+    }
+
+    [Fact]
+    public void SetSearchPaths_AfterDispose_ThrowsObjectDisposedException()
+    {
+        var engine = new MqEngine();
+        engine.Dispose();
+        Assert.Throws<ObjectDisposedException>(() => engine.SetSearchPaths([]));
+    }
+
+    [Fact]
+    public void DefineStringValue_InjectedVariable_AccessibleInQuery()
+    {
+        using var engine = new MqEngine();
+        engine.DefineStringValue("greeting", "hello");
+        var result = engine.Eval("greeting", "ignored", InputFormat.Text);
+        Assert.Single(result);
+        Assert.Equal("hello", result[0]);
+    }
+
+    [Fact]
+    public void DefineStringValue_OverwritesPreviousValue()
+    {
+        using var engine = new MqEngine();
+        engine.DefineStringValue("v", "first");
+        engine.DefineStringValue("v", "second");
+        var result = engine.Eval("v", "ignored", InputFormat.Text);
+        Assert.Single(result);
+        Assert.Equal("second", result[0]);
+    }
+
+    [Fact]
+    public void DefineStringValue_NullName_ThrowsArgumentNullException()
+    {
+        using var engine = new MqEngine();
+        Assert.Throws<ArgumentNullException>(() => engine.DefineStringValue(null!, "value"));
+    }
+
+    [Fact]
+    public void DefineStringValue_NullValue_ThrowsArgumentNullException()
+    {
+        using var engine = new MqEngine();
+        Assert.Throws<ArgumentNullException>(() => engine.DefineStringValue("name", null!));
+    }
+
+    [Fact]
+    public void DefineStringValue_AfterDispose_ThrowsObjectDisposedException()
+    {
+        var engine = new MqEngine();
+        engine.Dispose();
+        Assert.Throws<ObjectDisposedException>(() => engine.DefineStringValue("x", "y"));
+    }
+
+    [Fact]
+    public void ImportModule_NonExistentModule_ThrowsMqException()
+    {
+        using var engine = new MqEngine();
+        var ex = Assert.Throws<MqException>(() =>
+            engine.ImportModule("definitely_nonexistent_module_12345"));
+        Assert.NotEmpty(ex.Message);
+    }
+
+    [Fact]
+    public void ImportModule_NullName_ThrowsArgumentNullException()
+    {
+        using var engine = new MqEngine();
+        Assert.Throws<ArgumentNullException>(() => engine.ImportModule(null!));
+    }
+
+    [Fact]
+    public void ImportModule_AfterDispose_ThrowsObjectDisposedException()
+    {
+        var engine = new MqEngine();
+        engine.Dispose();
+        Assert.Throws<ObjectDisposedException>(() => engine.ImportModule("mod"));
+    }
+
+    [Fact]
+    public void LoadModule_NonExistentModule_ThrowsMqException()
+    {
+        using var engine = new MqEngine();
+        var ex = Assert.Throws<MqException>(() =>
+            engine.LoadModule("definitely_nonexistent_module_12345"));
+        Assert.NotEmpty(ex.Message);
+    }
+
+    [Fact]
+    public void LoadModule_NullName_ThrowsArgumentNullException()
+    {
+        using var engine = new MqEngine();
+        Assert.Throws<ArgumentNullException>(() => engine.LoadModule(null!));
+    }
+
+    [Fact]
+    public void LoadModule_AfterDispose_ThrowsObjectDisposedException()
+    {
+        var engine = new MqEngine();
+        engine.Dispose();
+        Assert.Throws<ObjectDisposedException>(() => engine.LoadModule("mod"));
+    }
+
+    // ── Module loading from file system (v0.6.x) ─────────────────────────────
+
+    [Fact]
+    public void LoadModule_FromSearchPath_ExposesDefinedFunction()
+    {
+        var tmpDir  = Path.GetTempPath();
+        var modFile = Path.Combine(tmpDir, "mqnet_test_load_module.mq");
+        File.WriteAllText(modFile, "def double(x): x * 2;");
+
+        try
+        {
+            using var engine = new MqEngine();
+            engine.SetSearchPaths([tmpDir]);
+            engine.LoadModule("mqnet_test_load_module");
+
+            // After LoadModule the function is in global scope — no namespace prefix.
+            var result = engine.Eval("double(3)", "ignored", InputFormat.Text);
+            Assert.Single(result);
+            Assert.Equal("6", result[0]);
+        }
+        finally
+        {
+            File.Delete(modFile);
+        }
+    }
+
+    [Fact]
+    public void ImportModule_FromSearchPath_ExposesNamespacedFunction()
+    {
+        var tmpDir  = Path.GetTempPath();
+        var modFile = Path.Combine(tmpDir, "mqnet_test_import_module.mq");
+        File.WriteAllText(modFile, "def triple(x): x * 3;");
+
+        try
+        {
+            using var engine = new MqEngine();
+            engine.SetSearchPaths([tmpDir]);
+            engine.ImportModule("mqnet_test_import_module");
+
+            // After ImportModule the function is namespaced.
+            var result = engine.Eval("mqnet_test_import_module::triple(2)", "ignored", InputFormat.Text);
+            Assert.Single(result);
+            Assert.Equal("6", result[0]);
+        }
+        finally
+        {
+            File.Delete(modFile);
+        }
+    }
 }
