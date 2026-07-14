@@ -356,62 +356,6 @@ public class MqEngineTests
         Assert.Throws<ObjectDisposedException>(() => engine.LoadModule("mod"));
     }
 
-    [Fact]
-    public void SetHttpAllowedDomains_EmptyList_DoesNotThrow()
-    {
-        using var engine = new MqEngine();
-        engine.SetHttpAllowedDomains([]);
-    }
-
-    [Fact]
-    public void SetHttpAllowedDomains_NullList_ThrowsArgumentNullException()
-    {
-        using var engine = new MqEngine();
-        Assert.Throws<ArgumentNullException>(() => engine.SetHttpAllowedDomains(null!));
-    }
-
-    [Fact]
-    public void SetHttpAllowedDomains_AfterDispose_ThrowsObjectDisposedException()
-    {
-        var engine = new MqEngine();
-        engine.Dispose();
-        Assert.Throws<ObjectDisposedException>(() => engine.SetHttpAllowedDomains([]));
-    }
-
-    [Fact]
-    public void ClearHttpCache_DoesNotThrowUnexpectedException()
-    {
-        // Either succeeds or throws MqException (when http-import feature is absent) —
-        // both are valid. Any other exception type would be a bug.
-        using var engine = new MqEngine();
-        try { engine.ClearHttpCache(); }
-        catch (MqException) { /* expected when http-import feature is not compiled in */ }
-    }
-
-    [Fact]
-    public void ClearHttpCacheAll_DoesNotThrowUnexpectedException()
-    {
-        using var engine = new MqEngine();
-        try { engine.ClearHttpCacheAll(); }
-        catch (MqException) { /* expected when http-import feature is not compiled in */ }
-    }
-
-    [Fact]
-    public void ClearHttpCache_AfterDispose_ThrowsObjectDisposedException()
-    {
-        var engine = new MqEngine();
-        engine.Dispose();
-        Assert.Throws<ObjectDisposedException>(() => engine.ClearHttpCache());
-    }
-
-    [Fact]
-    public void ClearHttpCacheAll_AfterDispose_ThrowsObjectDisposedException()
-    {
-        var engine = new MqEngine();
-        engine.Dispose();
-        Assert.Throws<ObjectDisposedException>(() => engine.ClearHttpCacheAll());
-    }
-
     // ── Module loading from file system (v0.6.x) ─────────────────────────────
 
     [Fact]

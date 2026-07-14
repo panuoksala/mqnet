@@ -194,45 +194,6 @@ public sealed class MqEngine : IDisposable
         ThrowIfError(errorPtr);
     }
 
-    /// <summary>
-    /// Sets the HTTP domain allowlist for module imports over HTTP(S).
-    /// An empty list restricts to the built-in default domain only.
-    /// </summary>
-    /// <param name="domains">Allowed domain names (e.g. <c>"example.com"</c>).</param>
-    /// <exception cref="ObjectDisposedException">If this engine has been disposed.</exception>
-    /// <exception cref="ArgumentNullException">If <paramref name="domains"/> is null.</exception>
-    public void SetHttpAllowedDomains(IReadOnlyList<string> domains)
-    {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-        ArgumentNullException.ThrowIfNull(domains);
-        MarshalStringArray(domains, (ptr, len) =>
-            NativeMethods.MqSetHttpAllowedDomains(_enginePtr, ptr, (UIntPtr)len));
-    }
-
-    /// <summary>
-    /// Clears locally-cached HTTP module files, forcing a re-fetch on next import.
-    /// </summary>
-    /// <exception cref="ObjectDisposedException">If this engine has been disposed.</exception>
-    /// <exception cref="MqException">If the cache could not be cleared.</exception>
-    public void ClearHttpCache()
-    {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-        var errorPtr = NativeMethods.MqClearHttpCache(_enginePtr);
-        ThrowIfError(errorPtr);
-    }
-
-    /// <summary>
-    /// Clears all HTTP module cache, including versioned modules and lock files.
-    /// </summary>
-    /// <exception cref="ObjectDisposedException">If this engine has been disposed.</exception>
-    /// <exception cref="MqException">If the cache could not be cleared.</exception>
-    public void ClearHttpCacheAll()
-    {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-        var errorPtr = NativeMethods.MqClearHttpCacheAll(_enginePtr);
-        ThrowIfError(errorPtr);
-    }
-
     /// <inheritdoc />
     public void Dispose()
     {

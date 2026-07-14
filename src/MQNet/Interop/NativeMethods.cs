@@ -120,24 +120,4 @@ internal static partial class NativeMethods
         StringMarshalling = StringMarshalling.Utf8)]
     internal static partial IntPtr MqLoadModule(IntPtr enginePtr, string moduleName);
 
-    /// <summary>
-    /// Sets the HTTP module import allowlist. domains is an array of domainsLen C strings.
-    /// Has no effect if enginePtr is null.
-    /// </summary>
-    [LibraryImport(LibName, EntryPoint = "mq_set_http_allowed_domains")]
-    internal static partial void MqSetHttpAllowedDomains(IntPtr enginePtr, IntPtr domains, UIntPtr domainsLen);
-
-    /// <summary>
-    /// Clears locally-cached HTTP module files. Returns null on success,
-    /// or an error string that must be freed with MqFreeString.
-    /// </summary>
-    [LibraryImport(LibName, EntryPoint = "mq_clear_http_cache")]
-    internal static partial IntPtr MqClearHttpCache(IntPtr enginePtr);
-
-    /// <summary>
-    /// Clears all HTTP module cache including versioned modules and lock files.
-    /// Returns null on success, or an error string that must be freed with MqFreeString.
-    /// </summary>
-    [LibraryImport(LibName, EntryPoint = "mq_clear_http_cache_all")]
-    internal static partial IntPtr MqClearHttpCacheAll(IntPtr enginePtr);
 }
