@@ -72,4 +72,72 @@ internal static partial class NativeMethods
         string html,
         MqConversionOptionsNative options,
         out IntPtr errorMsg);
+
+    // ── v0.6.x additions ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns the mq-ffi library version as a static UTF-8 string.
+    /// The returned pointer is static and must NOT be freed.
+    /// </summary>
+    [LibraryImport(LibName, EntryPoint = "mq_version")]
+    internal static partial IntPtr MqVersion();
+
+    /// <summary>Sets the AST optimization level. Has no effect if enginePtr is null.</summary>
+    [LibraryImport(LibName, EntryPoint = "mq_set_optimization_level")]
+    internal static partial void MqSetOptimizationLevel(IntPtr enginePtr, int level);
+
+    /// <summary>Sets the maximum call stack depth. Has no effect if enginePtr is null.</summary>
+    [LibraryImport(LibName, EntryPoint = "mq_set_max_call_stack_depth")]
+    internal static partial void MqSetMaxCallStackDepth(IntPtr enginePtr, uint maxDepth);
+
+    /// <summary>
+    /// Sets the module search paths. paths is an array of length pathsLen of
+    /// UTF-8 C strings. Has no effect if enginePtr is null.
+    /// </summary>
+    [LibraryImport(LibName, EntryPoint = "mq_set_search_paths")]
+    internal static partial void MqSetSearchPaths(IntPtr enginePtr, IntPtr paths, UIntPtr pathsLen);
+
+    /// <summary>
+    /// Injects a named string variable accessible from mq code. Has no effect if enginePtr is null.
+    /// </summary>
+    [LibraryImport(LibName, EntryPoint = "mq_define_string_value",
+        StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void MqDefineStringValue(IntPtr enginePtr, string name, string value);
+
+    /// <summary>
+    /// Namespace-imports a module by name. Returns null on success,
+    /// or a heap-allocated error string that must be freed with MqFreeString.
+    /// </summary>
+    [LibraryImport(LibName, EntryPoint = "mq_import_module",
+        StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial IntPtr MqImportModule(IntPtr enginePtr, string moduleName);
+
+    /// <summary>
+    /// Loads a module into the calling scope. Returns null on success,
+    /// or a heap-allocated error string that must be freed with MqFreeString.
+    /// </summary>
+    [LibraryImport(LibName, EntryPoint = "mq_load_module",
+        StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial IntPtr MqLoadModule(IntPtr enginePtr, string moduleName);
+
+    /// <summary>
+    /// Sets the HTTP module import allowlist. domains is an array of domainsLen C strings.
+    /// Has no effect if enginePtr is null.
+    /// </summary>
+    [LibraryImport(LibName, EntryPoint = "mq_set_http_allowed_domains")]
+    internal static partial void MqSetHttpAllowedDomains(IntPtr enginePtr, IntPtr domains, UIntPtr domainsLen);
+
+    /// <summary>
+    /// Clears locally-cached HTTP module files. Returns null on success,
+    /// or an error string that must be freed with MqFreeString.
+    /// </summary>
+    [LibraryImport(LibName, EntryPoint = "mq_clear_http_cache")]
+    internal static partial IntPtr MqClearHttpCache(IntPtr enginePtr);
+
+    /// <summary>
+    /// Clears all HTTP module cache including versioned modules and lock files.
+    /// Returns null on success, or an error string that must be freed with MqFreeString.
+    /// </summary>
+    [LibraryImport(LibName, EntryPoint = "mq_clear_http_cache_all")]
+    internal static partial IntPtr MqClearHttpCacheAll(IntPtr enginePtr);
 }
