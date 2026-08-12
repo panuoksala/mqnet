@@ -11,4 +11,10 @@ public sealed class ConversionOptions
 
     /// <summary>Use the HTML &lt;title&gt; element as the H1 heading.</summary>
     public bool UseTitleAsH1 { get; init; }
+
+    /// <summary>
+    /// Base URL used to resolve relative <c>href</c> and <c>src</c> values during conversion.
+    /// When <see langword="null"/>, the converter falls back to the HTML <c>&lt;base href&gt;</c> element if present.
+    /// </summary>
+    public string? BaseUrl { get; init; }
 }
