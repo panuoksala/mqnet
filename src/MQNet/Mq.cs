@@ -74,7 +74,7 @@ public static class Mq
     public static MqQueryBuilder CodeBlock(string language) => Query(MarkdownTag.CodeBlock(language));
 
     /// <summary>
-    /// Returns the version of the native mq-ffi library (e.g. <c>"0.8.2"</c>).
+    /// Returns the version of the native mq-ffi library (e.g. <c>"0.8.5"</c>).
     /// This delegates to <see cref="MqEngine.Version"/>.
     /// </summary>
     public static string Version => MqEngine.Version;

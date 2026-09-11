@@ -125,7 +125,7 @@ public sealed class MqEngine : IDisposable
     // ── Version ──────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Returns the version string of the native mq-ffi library (e.g. <c>"0.8.2"</c>).
+    /// Returns the version string of the native mq-ffi library (e.g. <c>"0.8.5"</c>).
     /// This is backed by a static C string; it is safe to call at any time.
     /// </summary>
     public static string Version
