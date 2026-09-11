@@ -12,7 +12,7 @@
     The mq release tag to build (default: v0.5.31)
 #>
 param(
-    [string]$MqTag = "v0.6.5"
+    [string]$MqTag = "v0.8.2"
 )
 
 $ErrorActionPreference = "Stop"

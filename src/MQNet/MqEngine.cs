@@ -64,16 +64,48 @@ public sealed class MqEngine : IDisposable
     {
         ArgumentNullException.ThrowIfNull(html);
 
-        var nativeOptions = options is null
-            ? default
-            : new MqConversionOptionsNative
-            {
-                ExtractScriptsAsCodeBlocks = options.ExtractScriptsAsCodeBlocks,
-                GenerateFrontMatter        = options.GenerateFrontMatter,
-                UseTitleAsH1               = options.UseTitleAsH1
-            };
+        // Encode BaseUrl as a null-terminated UTF-8 byte array so we can pin it.
+        // A null BaseUrl means the native side will use the HTML <base href> element.
+        byte[]? baseUrlBytes = options?.BaseUrl is { } url
+            ? System.Text.Encoding.UTF8.GetBytes(url + '\0')
+            : null;
 
-        var resultPtr = NativeMethods.MqHtmlToMarkdown(html, nativeOptions, out var errorMsgPtr);
+        IntPtr resultPtr;
+        IntPtr errorMsgPtr;
+
+        if (baseUrlBytes is not null)
+        {
+            var handle = System.Runtime.InteropServices.GCHandle.Alloc(
+                baseUrlBytes, System.Runtime.InteropServices.GCHandleType.Pinned);
+            try
+            {
+                var nativeOptions = new MqConversionOptionsNative
+                {
+                    ExtractScriptsAsCodeBlocks = options!.ExtractScriptsAsCodeBlocks,
+                    GenerateFrontMatter        = options.GenerateFrontMatter,
+                    UseTitleAsH1               = options.UseTitleAsH1,
+                    BaseUrl                    = handle.AddrOfPinnedObject()
+                };
+                resultPtr = NativeMethods.MqHtmlToMarkdown(html, nativeOptions, out errorMsgPtr);
+            }
+            finally
+            {
+                handle.Free();
+            }
+        }
+        else
+        {
+            var nativeOptions = options is null
+                ? default
+                : new MqConversionOptionsNative
+                {
+                    ExtractScriptsAsCodeBlocks = options.ExtractScriptsAsCodeBlocks,
+                    GenerateFrontMatter        = options.GenerateFrontMatter,
+                    UseTitleAsH1               = options.UseTitleAsH1,
+                    BaseUrl                    = IntPtr.Zero
+                };
+            resultPtr = NativeMethods.MqHtmlToMarkdown(html, nativeOptions, out errorMsgPtr);
+        }
 
         if (resultPtr == IntPtr.Zero)
         {
@@ -93,7 +125,7 @@ public sealed class MqEngine : IDisposable
     // ── Version ──────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Returns the version string of the native mq-ffi library (e.g. <c>"0.6.5"</c>).
+    /// Returns the version string of the native mq-ffi library (e.g. <c>"0.8.2"</c>).
     /// This is backed by a static C string; it is safe to call at any time.
     /// </summary>
     public static string Version

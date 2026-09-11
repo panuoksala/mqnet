@@ -20,13 +20,15 @@ internal struct MqResultNative
 /// Native struct matching mq-ffi's MqConversionOptions (repr(C)).
 /// Each bool is a single byte (Rust bool = 1 byte in C ABI).
 /// With DisableRuntimeMarshalling, bool fields are marshalled as 1 byte.
+/// base_url is a nullable UTF-8 C string pointer (*const c_char); null means "not set".
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 internal struct MqConversionOptionsNative
 {
-    public bool ExtractScriptsAsCodeBlocks;
-    public bool GenerateFrontMatter;
-    public bool UseTitleAsH1;
+    public bool    ExtractScriptsAsCodeBlocks;
+    public bool    GenerateFrontMatter;
+    public bool    UseTitleAsH1;
+    public IntPtr  BaseUrl;  // *const c_char — caller-owned, must remain pinned during the call
 }
 
 internal static partial class NativeMethods
