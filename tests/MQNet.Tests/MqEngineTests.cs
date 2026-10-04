@@ -181,47 +181,14 @@ public class MqEngineTests
     // ── Engine configuration (v0.6.x) ────────────────────────────────────────
 
     [Fact]
-    public void SetOptimizationLevel_None_DoesNotAffectEval()
-    {
-        using var engine = new MqEngine();
-        engine.SetOptimizationLevel(MqOptimizationLevel.None);
-        var result = engine.Eval(".h(1)", "# Hello");
-        Assert.Single(result);
-    }
-
-    [Fact]
-    public void SetOptimizationLevel_Basic_DoesNotAffectEval()
-    {
-        using var engine = new MqEngine();
-        engine.SetOptimizationLevel(MqOptimizationLevel.Basic);
-        var result = engine.Eval(".h(1)", "# Hello");
-        Assert.Single(result);
-    }
-
-    [Fact]
-    public void SetOptimizationLevel_Full_DoesNotAffectEval()
-    {
-        using var engine = new MqEngine();
-        engine.SetOptimizationLevel(MqOptimizationLevel.Full);
-        var result = engine.Eval(".h(1)", "# Hello");
-        Assert.Single(result);
-    }
-
-    [Fact]
-    public void SetOptimizationLevel_AfterDispose_ThrowsObjectDisposedException()
-    {
-        var engine = new MqEngine();
-        engine.Dispose();
-        Assert.Throws<ObjectDisposedException>(() => engine.SetOptimizationLevel(MqOptimizationLevel.None));
-    }
-
-    [Fact]
     public void SetMaxCallStackDepth_LowLimit_CausesErrorOnDeepRecursion()
     {
         using var engine = new MqEngine();
         engine.SetMaxCallStackDepth(2);
+        // The recursive call must not be in tail position: tail calls deliberately reuse a
+        // frame, while this test verifies enforcement of the configured stack-depth limit.
         var ex = Assert.Throws<MqException>(() =>
-            engine.Eval("def rec(): rec(); rec()", "test", InputFormat.Text));
+            engine.Eval("def rec(): 1 + rec(); | rec()", "test", InputFormat.Text));
         Assert.NotEmpty(ex.Message);
     }
 

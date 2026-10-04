@@ -84,10 +84,6 @@ internal static partial class NativeMethods
     [LibraryImport(LibName, EntryPoint = "mq_version")]
     internal static partial IntPtr MqVersion();
 
-    /// <summary>Sets the AST optimization level. Has no effect if enginePtr is null.</summary>
-    [LibraryImport(LibName, EntryPoint = "mq_set_optimization_level")]
-    internal static partial void MqSetOptimizationLevel(IntPtr enginePtr, int level);
-
     /// <summary>Sets the maximum call stack depth. Has no effect if enginePtr is null.</summary>
     [LibraryImport(LibName, EntryPoint = "mq_set_max_call_stack_depth")]
     internal static partial void MqSetMaxCallStackDepth(IntPtr enginePtr, uint maxDepth);
