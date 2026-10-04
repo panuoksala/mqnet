@@ -125,7 +125,7 @@ public sealed class MqEngine : IDisposable
     // ── Version ──────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Returns the version string of the native mq-ffi library (e.g. <c>"0.8.5"</c>).
+    /// Returns the version string of the native mq-ffi library (e.g. <c>"0.9.2"</c>).
     /// This is backed by a static C string; it is safe to call at any time.
     /// </summary>
     public static string Version
@@ -138,18 +138,6 @@ public sealed class MqEngine : IDisposable
     }
 
     // ── Engine configuration ──────────────────────────────────────────────────
-
-    /// <summary>
-    /// Sets the AST optimization level applied before each query evaluation.
-    /// Higher levels may improve evaluation speed at the cost of slightly longer compilation.
-    /// </summary>
-    /// <param name="level">The desired optimization level.</param>
-    /// <exception cref="ObjectDisposedException">If this engine has been disposed.</exception>
-    public void SetOptimizationLevel(MqOptimizationLevel level)
-    {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-        NativeMethods.MqSetOptimizationLevel(_enginePtr, (int)level);
-    }
 
     /// <summary>
     /// Sets the maximum call stack depth for mq function calls.
