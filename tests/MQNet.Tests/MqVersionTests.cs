@@ -20,6 +20,13 @@ public class MqVersionTests
     }
 
     [Fact]
+    public void Version_MatchesPinnedUpstreamRelease()
+    {
+        // Keep in sync with MQ_TAG in the CI workflows and the package <Version>.
+        Assert.Equal("0.10.0", MqEngine.Version);
+    }
+
+    [Fact]
     public void MqStaticVersion_MatchesMqEngineVersion()
     {
         Assert.Equal(MqEngine.Version, Mq.Version);

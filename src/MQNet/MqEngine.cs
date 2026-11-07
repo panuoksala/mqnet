@@ -125,7 +125,7 @@ public sealed class MqEngine : IDisposable
     // ── Version ──────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Returns the version string of the native mq-ffi library (e.g. <c>"0.9.2"</c>).
+    /// Returns the version string of the native mq-ffi library (e.g. <c>"0.10.0"</c>).
     /// This is backed by a static C string; it is safe to call at any time.
     /// </summary>
     public static string Version
@@ -150,6 +150,37 @@ public sealed class MqEngine : IDisposable
         ObjectDisposedException.ThrowIf(_disposed, this);
         NativeMethods.MqSetMaxCallStackDepth(_enginePtr, maxDepth);
     }
+
+    /// <summary>
+    /// Sets the maximum wall-clock time a single <see cref="Eval"/> call may run, to guard
+    /// against non-terminating untrusted queries. When exceeded, <see cref="Eval"/> throws
+    /// <see cref="MqException"/>. The deadline is checked periodically, so it may be
+    /// overshot slightly. The default is no timeout.
+    /// </summary>
+    /// <param name="timeout">
+    /// The maximum run time. <see cref="TimeSpan.Zero"/> disables the timeout. Must not be negative.
+    /// Positive values shorter than one millisecond are rounded up to one millisecond.
+    /// </param>
+    /// <exception cref="ObjectDisposedException">If this engine has been disposed.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">If <paramref name="timeout"/> is negative.</exception>
+    public void SetTimeout(TimeSpan timeout)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        ArgumentOutOfRangeException.ThrowIfLessThan(timeout, TimeSpan.Zero);
+        // A positive timeout shorter than 1 ms would truncate to 0 and silently disable the limit.
+        var ms = timeout > TimeSpan.Zero && timeout.TotalMilliseconds < 1
+            ? 1UL
+            : (ulong)timeout.TotalMilliseconds;
+        NativeMethods.MqSetTimeoutMs(_enginePtr, ms);
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> if the native library catches panics at the API boundary,
+    /// or <see langword="false"/> if it was built with <c>panic = "abort"</c> (e.g. a plain
+    /// <c>cargo build --release</c>), in which case any internal panic terminates the host process.
+    /// Check this before running untrusted queries.
+    /// </summary>
+    public static bool IsPanicSafe => NativeMethods.MqIsPanicSafe();
 
     /// <summary>
     /// Sets the file-system search paths used to resolve module imports.
