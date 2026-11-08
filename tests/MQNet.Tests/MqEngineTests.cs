@@ -210,6 +210,64 @@ public class MqEngineTests
         Assert.Throws<ObjectDisposedException>(() => engine.SetMaxCallStackDepth(100));
     }
 
+    // ── Engine configuration (v0.10.x) ───────────────────────────────────────
+
+    [Fact]
+    public void SetTimeout_NonTerminatingQuery_ThrowsMqException()
+    {
+        using var engine = new MqEngine();
+        engine.SetTimeout(TimeSpan.FromMilliseconds(200));
+        // A tail call reuses its frame, so this never overflows the stack and never ends.
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var ex = Assert.Throws<MqException>(() =>
+            engine.Eval("def spin(): spin(); | spin()", "test", InputFormat.Text));
+        sw.Stop();
+        Assert.NotEmpty(ex.Message);
+        Assert.True(sw.Elapsed < TimeSpan.FromSeconds(30), $"Timeout took too long: {sw.Elapsed}");
+    }
+
+    [Fact]
+    public void SetTimeout_GenerousLimit_AllowsNormalEval()
+    {
+        using var engine = new MqEngine();
+        engine.SetTimeout(TimeSpan.FromSeconds(30));
+        var result = engine.Eval(".h(1)", "# Hello");
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public void SetTimeout_Zero_DisablesTimeout()
+    {
+        using var engine = new MqEngine();
+        engine.SetTimeout(TimeSpan.FromMilliseconds(1));
+        engine.SetTimeout(TimeSpan.Zero);
+        var result = engine.Eval(".h(1)", "# Hello");
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public void SetTimeout_Negative_ThrowsArgumentOutOfRangeException()
+    {
+        using var engine = new MqEngine();
+        Assert.Throws<ArgumentOutOfRangeException>(() => engine.SetTimeout(TimeSpan.FromMilliseconds(-1)));
+    }
+
+    [Fact]
+    public void SetTimeout_AfterDispose_ThrowsObjectDisposedException()
+    {
+        var engine = new MqEngine();
+        engine.Dispose();
+        Assert.Throws<ObjectDisposedException>(() => engine.SetTimeout(TimeSpan.FromSeconds(1)));
+    }
+
+    [Fact]
+    public void IsPanicSafe_ReturnsWithoutThrowing()
+    {
+        // The value depends on how the native library was built (release profile uses
+        // panic = "abort"), so only verify that the export resolves and is stable.
+        Assert.Equal(MqEngine.IsPanicSafe, MqEngine.IsPanicSafe);
+    }
+
     [Fact]
     public void SetSearchPaths_EmptyList_DoesNotThrow()
     {

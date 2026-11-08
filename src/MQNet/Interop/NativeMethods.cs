@@ -118,4 +118,20 @@ internal static partial class NativeMethods
         StringMarshalling = StringMarshalling.Utf8)]
     internal static partial IntPtr MqLoadModule(IntPtr enginePtr, string moduleName);
 
+    // ── v0.10.x additions ───────────────────────────────────────────────────
+
+    /// <summary>
+    /// Sets the maximum wall-clock time, in milliseconds, a single mq_eval call may run.
+    /// 0 (MQ_NO_TIMEOUT) disables the timeout. Has no effect if enginePtr is null.
+    /// </summary>
+    [LibraryImport(LibName, EntryPoint = "mq_set_timeout_ms")]
+    internal static partial void MqSetTimeoutMs(IntPtr enginePtr, ulong timeoutMs);
+
+    /// <summary>
+    /// Returns true if panics are caught at the API boundary, false if the native library
+    /// was built with panic = "abort" (where any panic aborts the host process).
+    /// </summary>
+    [LibraryImport(LibName, EntryPoint = "mq_is_panic_safe")]
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static partial bool MqIsPanicSafe();
 }

@@ -203,6 +203,26 @@ var result = engine.Eval(".h | to_text", "# Hello\n\n## World");
 // result.Values → ["Hello", "World"]
 ```
 
+### Running untrusted queries (v0.10+)
+
+`MqEngine` has two guards for queries you don't control:
+
+```csharp
+using var engine = new MqEngine();
+
+// Abort queries that run longer than 2 seconds (MqException is thrown from Eval)
+engine.SetTimeout(TimeSpan.FromSeconds(2));
+
+// Abort runaway recursion
+engine.SetMaxCallStackDepth(200);
+
+// The native library must be built with an unwinding panic strategy for panics to be
+// caught at the API boundary. With a plain `cargo build --release` (panic = "abort") any
+// internal panic terminates the host process.
+if (!MqEngine.IsPanicSafe)
+    Console.Error.WriteLine("Warning: native mq_ffi aborts on panic.");
+```
+
 ## Built-in Modules (v0.6+)
 
 mq ships 15 standard modules embedded in the native binary. Load them with `LoadModule` (global scope) or `ImportModule` (namespaced) on an `MqEngine` instance — no file paths required.
